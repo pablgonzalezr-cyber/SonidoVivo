@@ -142,6 +142,19 @@ function Navbar({
 
                                 <li className="nav-item">
 
+                                    <NavLink
+                                        className="nav-link"
+                                        to="/mi-cuenta"
+                                    >
+
+                                        Mi Cuenta
+
+                                    </NavLink>
+
+                                </li>
+
+                                <li className="nav-item">
+
                                     <span className="nav-link">
 
                                         Hola, {sesion.nombre}

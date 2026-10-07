@@ -1,21 +1,45 @@
 import { useState } from "react";
+
 import {
     Routes,
     Route
 } from "react-router-dom";
 
+
 import LayoutPrincipal
     from "./components/LayoutPrincipal";
 
-import Inicio from "./pages/Inicio";
-import Productos from "./pages/Productos";
-import DetalleProducto from "./pages/DetalleProducto";
-    
-import Contacto from "./pages/Contacto";
-import Carrito from "./pages/Carrito";
-import Registro from "./pages/Registro";
-import Login from "./pages/Login";
-import NotFound from "./pages/NotFound";
+import RutaProtegida
+    from "./components/RutaProtegida";
+
+
+import Inicio
+    from "./pages/Inicio";
+
+import Productos
+    from "./pages/Productos";
+
+import DetalleProducto
+    from "./pages/DetalleProducto";
+
+import Contacto
+    from "./pages/Contacto";
+
+import Carrito
+    from "./pages/Carrito";
+
+import Registro
+    from "./pages/Registro";
+
+import Login
+    from "./pages/Login";
+
+import MiCuenta
+    from "./pages/MiCuenta";
+
+import NotFound
+    from "./pages/NotFound";
+
 
 import {
     obtenerSesion,
@@ -100,6 +124,24 @@ function App() {
                         <Login
                             onLogin={usuarioInicioSesion}
                         />
+                    }
+                />
+
+
+                <Route
+                    path="/mi-cuenta"
+                    element={
+
+                        <RutaProtegida
+                            sesion={sesion}
+                        >
+
+                            <MiCuenta
+                                sesion={sesion}
+                            />
+
+                        </RutaProtegida>
+
                     }
                 />
 
