@@ -4,6 +4,7 @@ import LayoutPrincipal from "./components/LayoutPrincipal";
 
 import Inicio from "./pages/Inicio";
 import Productos from "./pages/Productos";
+import DetalleProducto from "./pages/DetalleProducto";
 import Contacto from "./pages/Contacto";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,12 @@ function App() {
                 <Route
                     path="/productos"
                     element={<Productos />}
+                />
+
+
+                <Route
+                    path="/productos/:codigo"
+                    element={<DetalleProducto />}
                 />
 
 
