@@ -77,8 +77,51 @@ function registrarUsuario(usuario) {
 }
 
 
+function inicializarAdministrador() {
+
+    const usuarios = obtenerUsuarios();
+
+
+    const existeAdministrador =
+        usuarios.some(
+            (usuario) =>
+                usuario.rol === "ADMIN"
+        );
+
+
+    if (existeAdministrador) {
+
+        return;
+
+    }
+
+
+    const administrador = {
+
+        id: Date.now(),
+
+        nombre: "Administrador Sonido Vivo",
+
+        correo: "admin@sonidovivo.cl",
+
+        contrasena: "admin123",
+
+        rol: "ADMIN"
+
+    };
+
+
+    usuarios.push(administrador);
+
+
+    guardarUsuarios(usuarios);
+
+}
+
+
 export {
     obtenerUsuarios,
     correoRegistrado,
-    registrarUsuario
+    registrarUsuario,
+    inicializarAdministrador
 };

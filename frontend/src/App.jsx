@@ -1,4 +1,7 @@
-import { useState } from "react";
+import {
+    useEffect,
+    useState
+} from "react";
 
 import {
     Routes,
@@ -37,6 +40,9 @@ import Login
 import MiCuenta
     from "./pages/MiCuenta";
 
+import PanelAdmin
+    from "./pages/PanelAdmin";
+
 import NotFound
     from "./pages/NotFound";
 
@@ -46,11 +52,22 @@ import {
     cerrarSesion
 } from "./services/authService";
 
+import {
+    inicializarAdministrador
+} from "./services/usuariosService";
+
 
 function App() {
 
     const [sesion, setSesion] =
         useState(obtenerSesion());
+
+
+    useEffect(() => {
+
+        inicializarAdministrador();
+
+    }, []);
 
 
     function usuarioInicioSesion(usuario) {
@@ -139,6 +156,23 @@ function App() {
                             <MiCuenta
                                 sesion={sesion}
                             />
+
+                        </RutaProtegida>
+
+                    }
+                />
+
+
+                <Route
+                    path="/admin"
+                    element={
+
+                        <RutaProtegida
+                            sesion={sesion}
+                            rolesPermitidos={["ADMIN"]}
+                        >
+
+                            <PanelAdmin />
 
                         </RutaProtegida>
 

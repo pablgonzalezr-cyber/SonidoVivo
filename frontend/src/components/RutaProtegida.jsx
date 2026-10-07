@@ -5,6 +5,7 @@ import {
 
 function RutaProtegida({
     sesion,
+    rolesPermitidos = [],
     children
 }) {
 
@@ -13,6 +14,21 @@ function RutaProtegida({
         return (
             <Navigate
                 to="/login"
+                replace
+            />
+        );
+
+    }
+
+
+    if (
+        rolesPermitidos.length > 0 &&
+        !rolesPermitidos.includes(sesion.rol)
+    ) {
+
+        return (
+            <Navigate
+                to="/"
                 replace
             />
         );

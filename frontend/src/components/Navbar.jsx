@@ -140,6 +140,23 @@ function Navbar({
 
                             <>
 
+                                {sesion.rol === "ADMIN" && (
+
+                                    <li className="nav-item">
+
+                                        <NavLink
+                                            className="nav-link"
+                                            to="/admin"
+                                        >
+
+                                            Administracion
+
+                                        </NavLink>
+
+                                    </li>
+
+                                )}
+
                                 <li className="nav-item">
 
                                     <NavLink
