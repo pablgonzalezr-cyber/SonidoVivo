@@ -1,3 +1,6 @@
+import { NavLink } from "react-router-dom";
+
+
 function Navbar() {
 
     return (
@@ -6,12 +9,14 @@ function Navbar() {
 
             <div className="container">
 
-                <a
+                <NavLink
                     className="navbar-brand"
-                    href="/"
+                    to="/"
                 >
+
                     Sonido Vivo
-                </a>
+
+                </NavLink>
 
 
                 <button
@@ -38,42 +43,42 @@ function Navbar() {
 
                         <li className="nav-item">
 
-                            <a
-                                className="nav-link active"
-                                href="/"
+                            <NavLink
+                                className="nav-link"
+                                to="/"
                             >
 
                                 Inicio
 
-                            </a>
+                            </NavLink>
 
                         </li>
 
 
                         <li className="nav-item">
 
-                            <a
+                            <NavLink
                                 className="nav-link"
-                                href="#productos"
+                                to="/productos"
                             >
 
                                 Productos
 
-                            </a>
+                            </NavLink>
 
                         </li>
 
 
                         <li className="nav-item">
 
-                            <a
+                            <NavLink
                                 className="nav-link"
-                                href="#contacto"
+                                to="/contacto"
                             >
 
                                 Contacto
 
-                            </a>
+                            </NavLink>
 
                         </li>
 

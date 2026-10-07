@@ -1,9 +1,11 @@
+import { Outlet } from "react-router-dom";
+
 import Header from "./Header";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
 
-function LayoutPrincipal({ children }) {
+function LayoutPrincipal() {
 
     return (
 
@@ -16,7 +18,7 @@ function LayoutPrincipal({ children }) {
 
             <main className="contenido-principal">
 
-                {children}
+                <Outlet />
 
             </main>
 

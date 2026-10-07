@@ -1,49 +1,47 @@
+import { Routes, Route } from "react-router-dom";
+
 import LayoutPrincipal from "./components/LayoutPrincipal";
+
+import Inicio from "./pages/Inicio";
+import Productos from "./pages/Productos";
+import Contacto from "./pages/Contacto";
+import NotFound from "./pages/NotFound";
 
 
 function App() {
 
     return (
 
-        <LayoutPrincipal>
+        <Routes>
 
-            <section className="container py-5">
+            <Route element={<LayoutPrincipal />}>
 
-                <div className="text-center">
-
-                    <span className="badge bg-warning text-dark mb-3">
-
-                        SONIDO VIVO
-
-                    </span>
+                <Route
+                    path="/"
+                    element={<Inicio />}
+                />
 
 
-                    <h2 className="display-4 fw-bold">
-
-                        Todo para hacer música
-
-                    </h2>
-
-
-                    <p className="lead text-secondary">
-
-                        Explora instrumentos, audio profesional
-                        y accesorios para músicos.
-
-                    </p>
+                <Route
+                    path="/productos"
+                    element={<Productos />}
+                />
 
 
-                    <button className="btn btn-dark btn-lg mt-3">
+                <Route
+                    path="/contacto"
+                    element={<Contacto />}
+                />
 
-                        Próximamente: catálogo
 
-                    </button>
+                <Route
+                    path="*"
+                    element={<NotFound />}
+                />
 
-                </div>
+            </Route>
 
-            </section>
-
-        </LayoutPrincipal>
+        </Routes>
 
     );
 
