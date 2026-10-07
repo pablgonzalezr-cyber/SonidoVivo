@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
-import productos from "../data/productos";
+import {
+    obtenerProductoPorCodigo
+} from "../services/productosService";
 
 import {
     agregarAlCarrito
@@ -15,10 +17,8 @@ function DetalleProducto() {
     const [agregado, setAgregado] = useState(false);
 
 
-    const producto = productos.find(
-        (producto) =>
-            producto.codigo === codigo
-    );
+    const producto =
+    obtenerProductoPorCodigo(codigo);
 
 
     if (!producto) {

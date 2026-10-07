@@ -1,10 +1,14 @@
 import { useState } from "react";
 
-import productos from "../data/productos";
+import {
+    obtenerProductos
+} from "../services/productosService";
 import ProductoCard from "../components/ProductoCard";
 
 
 function Productos() {
+
+    const productos = obtenerProductos();
 
     const [busqueda, setBusqueda] = useState("");
 

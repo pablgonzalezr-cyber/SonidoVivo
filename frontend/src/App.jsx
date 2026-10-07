@@ -56,6 +56,11 @@ import {
     inicializarAdministrador
 } from "./services/usuariosService";
 
+import {
+    inicializarProductos
+} from "./services/productosService";
+
+
 
 function App() {
 
@@ -65,7 +70,9 @@ function App() {
 
     useEffect(() => {
 
-        inicializarAdministrador();
+    inicializarAdministrador();
+
+    inicializarProductos();
 
     }, []);
 

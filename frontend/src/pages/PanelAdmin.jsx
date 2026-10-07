@@ -1,4 +1,6 @@
-import productos from "../data/productos";
+import {
+    obtenerProductos
+} from "../services/productosService";
 
 import {
     obtenerUsuarios
@@ -9,6 +11,7 @@ function PanelAdmin() {
 
     const usuarios = obtenerUsuarios();
 
+    const productos = obtenerProductos();
 
     const totalStock =
         productos.reduce(
