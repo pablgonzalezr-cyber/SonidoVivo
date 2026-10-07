@@ -22,8 +22,27 @@ function validarMensaje(mensaje) {
 }
 
 
+function validarContrasena(contrasena) {
+
+    return contrasena.length >= 6;
+
+}
+
+
+function validarConfirmacionContrasena(
+    contrasena,
+    confirmarContrasena
+) {
+
+    return contrasena === confirmarContrasena;
+
+}
+
+
 export {
     validarNombre,
     validarCorreo,
-    validarMensaje
+    validarMensaje,
+    validarContrasena,
+    validarConfirmacionContrasena
 };
