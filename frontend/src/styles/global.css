@@ -1,0 +1,73 @@
+:root {
+    font-family: Arial, Helvetica, sans-serif;
+
+    color: #1f2937;
+
+    background-color: #f8f9fa;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body,
+#root {
+    min-height: 100%;
+}
+
+
+body {
+    margin: 0;
+
+    background-color: #f8f9fa;
+}
+
+
+.layout-principal {
+    min-height: 100vh;
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.contenido-principal {
+    flex: 1;
+}
+
+
+.header-sonido-vivo {
+    background-color: #d89b2b;
+
+    color: #111827;
+}
+
+
+.logo-sonido-vivo {
+    font-size: 34px;
+
+    font-weight: bold;
+}
+
+
+.subtitulo-header {
+    margin: 0;
+
+    color: #374151;
+}
+
+
+.icono-musical {
+    font-size: 48px;
+}
+
+
+.footer-sonido-vivo {
+    background-color: #111827;
+
+    color: #ffffff;
+}

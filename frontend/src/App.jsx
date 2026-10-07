@@ -1,26 +1,49 @@
+import LayoutPrincipal from "./components/LayoutPrincipal";
+
+
 function App() {
 
     return (
 
-        <main className="container py-5">
+        <LayoutPrincipal>
 
-            <div className="text-center">
+            <section className="container py-5">
 
-                <h1 className="display-4 fw-bold">
-                    Sonido Vivo
-                </h1>
+                <div className="text-center">
 
-                <p className="lead">
-                    Tienda de instrumentos y equipos musicales
-                </p>
+                    <span className="badge bg-warning text-dark mb-3">
 
-                <span className="badge bg-warning text-dark">
-                    Proyecto Semestral DSY1104
-                </span>
+                        SONIDO VIVO
 
-            </div>
+                    </span>
 
-        </main>
+
+                    <h2 className="display-4 fw-bold">
+
+                        Todo para hacer música
+
+                    </h2>
+
+
+                    <p className="lead text-secondary">
+
+                        Explora instrumentos, audio profesional
+                        y accesorios para músicos.
+
+                    </p>
+
+
+                    <button className="btn btn-dark btn-lg mt-3">
+
+                        Próximamente: catálogo
+
+                    </button>
+
+                </div>
+
+            </section>
+
+        </LayoutPrincipal>
 
     );
 
