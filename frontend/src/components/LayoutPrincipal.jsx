@@ -5,7 +5,10 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 
 
-function LayoutPrincipal() {
+function LayoutPrincipal({
+    sesion,
+    onLogout
+}) {
 
     return (
 
@@ -13,7 +16,11 @@ function LayoutPrincipal() {
 
             <Header />
 
-            <Navbar />
+
+            <Navbar
+                sesion={sesion}
+                onLogout={onLogout}
+            />
 
 
             <main className="contenido-principal">

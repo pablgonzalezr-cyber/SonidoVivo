@@ -1,7 +1,12 @@
-import { NavLink } from "react-router-dom";
+import {
+    NavLink
+} from "react-router-dom";
 
 
-function Navbar() {
+function Navbar({
+    sesion,
+    onLogout
+}) {
 
     return (
 
@@ -26,10 +31,11 @@ function Navbar() {
                     data-bs-target="#navbarPrincipal"
                     aria-controls="navbarPrincipal"
                     aria-expanded="false"
-                    aria-label="Abrir navegación"
+                    aria-label="Abrir navegacion"
                 >
 
-                    <span className="navbar-toggler-icon"></span>
+                    <span className="navbar-toggler-icon">
+                    </span>
 
                 </button>
 
@@ -79,9 +85,9 @@ function Navbar() {
                                 Contacto
 
                             </NavLink>
-                            
 
                         </li>
+
 
                         <li className="nav-item">
 
@@ -96,18 +102,72 @@ function Navbar() {
 
                         </li>
 
-                        <li className="nav-item">
 
-                            <NavLink
-                                className="nav-link"
-                                to="/registro"
-                            >
+                        {!sesion ? (
 
-                                Registrarse
+                            <>
 
-                            </NavLink>
+                                <li className="nav-item">
 
-                        </li>
+                                    <NavLink
+                                        className="nav-link"
+                                        to="/registro"
+                                    >
+
+                                        Registrarse
+
+                                    </NavLink>
+
+                                </li>
+
+
+                                <li className="nav-item">
+
+                                    <NavLink
+                                        className="nav-link"
+                                        to="/login"
+                                    >
+
+                                        Iniciar sesion
+
+                                    </NavLink>
+
+                                </li>
+
+                            </>
+
+                        ) : (
+
+                            <>
+
+                                <li className="nav-item">
+
+                                    <span className="nav-link">
+
+                                        Hola, {sesion.nombre}
+
+                                    </span>
+
+                                </li>
+
+
+                                <li className="nav-item">
+
+                                    <button
+                                        type="button"
+                                        className="nav-link btn btn-link"
+                                        onClick={onLogout}
+                                    >
+
+                                        Cerrar sesion
+
+                                    </button>
+
+                                </li>
+
+                            </>
+
+                        )}
 
                     </ul>
 
