@@ -160,6 +160,15 @@ function PanelAdmin() {
 
                 </Link>
 
+                <Link
+                    to="/admin/pedidos"
+                    className="btn btn-outline-dark ms-2"
+                >
+
+                    Gestionar pedidos
+
+                </Link>
+
             </div>
 
         </section>

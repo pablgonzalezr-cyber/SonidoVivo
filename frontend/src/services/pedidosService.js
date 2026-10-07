@@ -83,7 +83,65 @@ function crearPedido({
 }
 
 
+function obtenerPedidosPorUsuario(
+    usuarioId
+) {
+
+    const pedidos = obtenerPedidos();
+
+
+    return pedidos.filter(
+        (pedido) =>
+            pedido.usuarioId === usuarioId
+    );
+
+}
+
+
+function actualizarEstadoPedido(
+    pedidoId,
+    nuevoEstado
+) {
+
+    const pedidos = obtenerPedidos();
+
+
+    const pedidosActualizados =
+        pedidos.map(
+            (pedido) => {
+
+                if (
+                    pedido.id === pedidoId
+                ) {
+
+                    return {
+                        ...pedido,
+                        estado: nuevoEstado
+                    };
+
+                }
+
+
+                return pedido;
+
+            }
+        );
+
+
+    guardarPedidos(
+        pedidosActualizados
+    );
+
+
+    return pedidosActualizados;
+
+}
+
+
 export {
     obtenerPedidos,
-    crearPedido
+    crearPedido,
+    obtenerPedidosPorUsuario,
+    actualizarEstadoPedido
 };
+

@@ -66,6 +66,12 @@ import GestionProductos
 import Checkout
     from "./pages/Checkout";
 
+import MisPedidos
+    from "./pages/MisPedidos";
+
+import GestionPedidos
+    from "./pages/GestionPedidos";
+
 
 
 function App() {
@@ -224,6 +230,41 @@ function App() {
 
                     }
                 />
+
+                <Route
+                    path="/mis-pedidos"
+                    element={
+
+                        <RutaProtegida
+                            sesion={sesion}
+                        >
+
+                            <MisPedidos
+                                sesion={sesion}
+                            />
+
+                        </RutaProtegida>
+
+                    }
+                />
+
+                <Route
+                    path="/admin/pedidos"
+                    element={
+
+                        <RutaProtegida
+                            sesion={sesion}
+                            rolesPermitidos={["ADMIN"]}
+                        >
+
+                            <GestionPedidos />
+
+                        </RutaProtegida>
+
+                    }
+                />
+
+
 
 
                 <Route

@@ -161,6 +161,20 @@ function Navbar({
 
                                     <NavLink
                                         className="nav-link"
+                                        to="/mis-pedidos"
+                                    >
+
+                                        Mis Pedidos
+
+                                    </NavLink>
+
+                                </li>
+
+
+                                <li className="nav-item">
+
+                                    <NavLink
+                                        className="nav-link"
                                         to="/mi-cuenta"
                                     >
 
