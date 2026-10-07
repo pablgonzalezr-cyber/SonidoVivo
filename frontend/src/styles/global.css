@@ -71,3 +71,39 @@ body {
 
     color: #ffffff;
 }
+
+.producto-card {
+    border: none;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08);
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+}
+
+
+.producto-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+
+.producto-imagen-placeholder {
+    height: 180px;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    background-color: #e5e7eb;
+
+    color: #d89b2b;
+
+    font-size: 70px;
+}

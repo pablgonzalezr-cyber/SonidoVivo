@@ -1,3 +1,8 @@
+import productos from "../data/productos";
+
+import ProductoCard from "../components/ProductoCard";
+
+
 function Productos() {
 
     return (
@@ -6,25 +11,39 @@ function Productos() {
 
             <div className="mb-4">
 
-                <h2>
-                    Productos
+                <h2 className="fw-bold">
+
+                    Catálogo de productos
+
                 </h2>
 
 
                 <p className="text-secondary">
 
-                    Catálogo de instrumentos,
-                    equipos musicales y accesorios.
+                    Conoce una muestra de los instrumentos
+                    y equipos disponibles en Sonido Vivo.
 
                 </p>
 
             </div>
 
 
-            <div className="alert alert-warning">
+            <div className="row g-4">
 
-                catálogo oficial de Sonido Vivo
-            
+                {productos.map((producto) => (
+
+                    <div
+                        className="col-12 col-md-6 col-lg-4"
+                        key={producto.codigo}
+                    >
+
+                        <ProductoCard
+                            producto={producto}
+                        />
+
+                    </div>
+
+                ))}
 
             </div>
 
