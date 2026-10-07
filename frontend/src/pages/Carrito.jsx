@@ -165,6 +165,13 @@ function Carrito() {
 
                         </h3>
 
+                        <Link
+                            to="/checkout"
+                            className="btn btn-dark mt-2"
+                        >
+                            Finalizar compra
+                        </Link>
+
                     </div>
 
                 </>

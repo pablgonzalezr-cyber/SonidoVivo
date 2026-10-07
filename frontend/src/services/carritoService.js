@@ -83,9 +83,18 @@ function eliminarDelCarrito(codigo) {
 
 }
 
+function vaciarCarrito() {
+
+    localStorage.removeItem(
+        CLAVE_CARRITO
+    );
+
+}
+
 
 export {
     obtenerCarrito,
     agregarAlCarrito,
-    eliminarDelCarrito
+    eliminarDelCarrito,
+    vaciarCarrito
 };

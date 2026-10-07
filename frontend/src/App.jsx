@@ -63,6 +63,9 @@ import {
 import GestionProductos
     from "./pages/GestionProductos";
 
+import Checkout
+    from "./pages/Checkout";
+
 
 
 function App() {
@@ -199,6 +202,23 @@ function App() {
                         >
 
                             <GestionProductos />
+
+                        </RutaProtegida>
+
+                    }
+                />
+
+                <Route
+                    path="/checkout"
+                    element={
+
+                        <RutaProtegida
+                            sesion={sesion}
+                        >
+
+                            <Checkout
+                                sesion={sesion}
+                            />
 
                         </RutaProtegida>
 
