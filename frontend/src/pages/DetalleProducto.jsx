@@ -1,11 +1,18 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import productos from "../data/productos";
+
+import {
+    agregarAlCarrito
+} from "../services/carritoService";
 
 
 function DetalleProducto() {
 
     const { codigo } = useParams();
+
+    const [agregado, setAgregado] = useState(false);
 
 
     const producto = productos.find(
@@ -45,6 +52,15 @@ function DetalleProducto() {
             </section>
 
         );
+
+    }
+
+
+    function agregarProducto() {
+
+        agregarAlCarrito(producto);
+
+        setAgregado(true);
 
     }
 
@@ -132,6 +148,27 @@ function DetalleProducto() {
                         {producto.codigo}
 
                     </p>
+
+
+                    <button
+                        className="btn btn-dark mt-3"
+                        onClick={agregarProducto}
+                    >
+
+                        Agregar al carrito
+
+                    </button>
+
+
+                    {agregado && (
+
+                        <div className="alert alert-success mt-3">
+
+                            Producto agregado al carrito.
+
+                        </div>
+
+                    )}
 
                 </div>
 

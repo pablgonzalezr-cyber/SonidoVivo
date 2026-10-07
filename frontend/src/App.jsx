@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 
 import LayoutPrincipal from "./components/LayoutPrincipal";
 
+import Carrito from "./pages/Carrito";
+
 import Inicio from "./pages/Inicio";
 import Productos from "./pages/Productos";
 import DetalleProducto from "./pages/DetalleProducto";
@@ -44,6 +46,11 @@ function App() {
                 <Route
                     path="*"
                     element={<NotFound />}
+                />
+
+                <Route
+                    path="/carrito"
+                    element={<Carrito />}
                 />
 
             </Route>

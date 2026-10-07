@@ -79,6 +79,20 @@ function Navbar() {
                                 Contacto
 
                             </NavLink>
+                            
+
+                        </li>
+
+                        <li className="nav-item">
+
+                            <NavLink
+                                className="nav-link"
+                                to="/carrito"
+                            >
+
+                                Carrito
+
+                            </NavLink>
 
                         </li>
 
