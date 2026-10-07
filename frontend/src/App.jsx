@@ -60,6 +60,9 @@ import {
     inicializarProductos
 } from "./services/productosService";
 
+import GestionProductos
+    from "./pages/GestionProductos";
+
 
 
 function App() {
@@ -180,6 +183,22 @@ function App() {
                         >
 
                             <PanelAdmin />
+
+                        </RutaProtegida>
+
+                    }
+                />
+
+                <Route
+                    path="/admin/productos"
+                    element={
+
+                        <RutaProtegida
+                            sesion={sesion}
+                            rolesPermitidos={["ADMIN"]}
+                        >
+
+                            <GestionProductos />
 
                         </RutaProtegida>
 

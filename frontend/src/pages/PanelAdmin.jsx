@@ -6,6 +6,8 @@ import {
     obtenerUsuarios
 } from "../services/usuariosService";
 
+import { Link } from "react-router-dom";
+
 
 function PanelAdmin() {
 
@@ -144,6 +146,19 @@ function PanelAdmin() {
                     del proyecto.
 
                 </p>
+
+            </div>
+
+            <div className="mt-4">
+
+                <Link
+                    to="/admin/productos"
+                    className="btn btn-dark"
+                >
+
+                    Gestionar productos
+
+                </Link>
 
             </div>
 

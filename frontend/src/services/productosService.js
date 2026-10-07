@@ -59,8 +59,87 @@ function obtenerProductoPorCodigo(codigo) {
 }
 
 
+function agregarProducto(producto) {
+
+    const productos = obtenerProductos();
+
+
+    const existeCodigo =
+        productos.some(
+            (item) =>
+                item.codigo === producto.codigo
+        );
+
+
+    if (existeCodigo) {
+
+        return false;
+
+    }
+
+
+    productos.push(producto);
+
+    guardarProductos(productos);
+
+
+    return true;
+
+}
+
+
+function actualizarProducto(productoActualizado) {
+
+    const productos = obtenerProductos();
+
+
+    const nuevosProductos =
+        productos.map(
+            (producto) => {
+
+                if (
+                    producto.codigo ===
+                    productoActualizado.codigo
+                ) {
+
+                    return productoActualizado;
+
+                }
+
+
+                return producto;
+
+            }
+        );
+
+
+    guardarProductos(nuevosProductos);
+
+}
+
+
+function eliminarProducto(codigo) {
+
+    const productos = obtenerProductos();
+
+
+    const nuevosProductos =
+        productos.filter(
+            (producto) =>
+                producto.codigo !== codigo
+        );
+
+
+    guardarProductos(nuevosProductos);
+
+}
+
+
 export {
     inicializarProductos,
     obtenerProductos,
-    obtenerProductoPorCodigo
+    obtenerProductoPorCodigo,
+    agregarProducto,
+    actualizarProducto,
+    eliminarProducto
 };
