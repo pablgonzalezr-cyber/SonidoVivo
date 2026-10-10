@@ -1,3 +1,7 @@
+import {
+    obtenerProductoPorCodigo
+} from "./productosService";
+
 const CLAVE_CARRITO = "sonidoVivoCarrito";
 
 
@@ -29,39 +33,55 @@ function guardarCarrito(carrito) {
 }
 
 
+
 function agregarAlCarrito(producto) {
+
+    
+    const productoActual = obtenerProductoPorCodigo(
+        producto.codigo
+    );
+
+    
+    if (!productoActual) {
+        throw new Error(
+            "El producto ya no está disponible."
+        );
+    }
 
     const carrito = obtenerCarrito();
 
+    
+    const productoExistente = carrito.find(
+        (item) => item.codigo === producto.codigo
+    );
 
-    const productoExistente =
-        carrito.find(
-            (item) =>
-                item.codigo === producto.codigo
+    
+    const cantidadActual = productoExistente
+        ? productoExistente.cantidad
+        : 0;
+
+    
+    if (cantidadActual >= productoActual.stock) {
+        throw new Error(
+            "No hay suficiente stock disponible."
         );
-
-
-    if (productoExistente) {
-
-        productoExistente.cantidad =
-            productoExistente.cantidad + 1;
-
-    } else {
-
-        carrito.push({
-
-            ...producto,
-
-            cantidad: 1
-
-        });
-
     }
 
+   
+    if (productoExistente) {
+        productoExistente.cantidad =
+            productoExistente.cantidad + 1;
+    } else {
+        carrito.push({
+            ...productoActual,
+            cantidad: 1
+        });
+    }
 
+    
     guardarCarrito(carrito);
-
 }
+
 
 
 function eliminarDelCarrito(codigo) {

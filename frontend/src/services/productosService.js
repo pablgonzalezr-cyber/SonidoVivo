@@ -135,11 +135,73 @@ function eliminarProducto(codigo) {
 }
 
 
+function descontarStock(productosComprados) {
+
+    const productos = obtenerProductos();
+
+    const cantidades = {};
+
+    for (const item of productosComprados) {
+
+        if (
+            !Number.isInteger(item.cantidad) ||
+            item.cantidad <= 0
+        ) {
+            throw new Error(
+                "La cantidad solicitada no es válida."
+            );
+        }
+
+        cantidades[item.codigo] =
+            (cantidades[item.codigo] || 0) +
+            item.cantidad;
+
+    }
+
+    for (const codigo of Object.keys(cantidades)) {
+
+        const producto = productos.find(
+            (item) => item.codigo === codigo
+        );
+
+        if (!producto) {
+            throw new Error(
+                "Uno de los productos ya no está disponible."
+            );
+        }
+
+        if (cantidades[codigo] > producto.stock) {
+            throw new Error(
+                `Stock insuficiente para ${producto.nombre}. Disponibles: ${producto.stock}.`
+            );
+        }
+
+    }
+
+    const productosActualizados = productos.map(
+        (producto) => ({
+            ...producto,
+            stock:
+                producto.stock -
+                (cantidades[producto.codigo] || 0)
+        })
+    );
+
+    guardarProductos(productosActualizados);
+
+    return productosActualizados;
+
+}
+
+
+
+
 export {
     inicializarProductos,
     obtenerProductos,
     obtenerProductoPorCodigo,
     agregarProducto,
     actualizarProducto,
-    eliminarProducto
+    eliminarProducto,
+    descontarStock
 };

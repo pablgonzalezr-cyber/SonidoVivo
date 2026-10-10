@@ -6,15 +6,27 @@ import {
 } from "../services/productosService";
 
 import {
-    agregarAlCarrito
+    agregarAlCarrito,
+    obtenerCarrito
 } from "../services/carritoService";
-
 
 function DetalleProducto() {
 
     const { codigo } = useParams();
 
     const [agregado, setAgregado] = useState(false);
+
+    const [error, setError] = useState("");
+
+    const [cantidadEnCarrito, setCantidadEnCarrito] = useState(() => {
+
+        const item = obtenerCarrito().find(
+            (item) => item.codigo === codigo
+        );
+
+        return item ? item.cantidad : 0;
+
+    });
 
 
     const producto =
@@ -55,14 +67,42 @@ function DetalleProducto() {
 
     }
 
+    const stockDisponible = Math.max(
+        0,
+        producto.stock - cantidadEnCarrito
+    );
 
+
+    
+    
     function agregarProducto() {
 
-        agregarAlCarrito(producto);
+        setError("");
+        setAgregado(false);
 
-        setAgregado(true);
+        try {
+
+            agregarAlCarrito(producto);
+
+            const item = obtenerCarrito().find(
+                (item) => item.codigo === producto.codigo
+            );
+
+            setCantidadEnCarrito(
+                item ? item.cantidad : 0
+            );
+
+            setAgregado(true);
+
+        } catch (error) {
+
+            setError(error.message);
+
+        }
 
     }
+
+
 
 
     return (
@@ -133,11 +173,9 @@ function DetalleProducto() {
 
 
                     <p>
-
-                        Stock disponible:
+                        Unidades disponibles para agregar:
                         {" "}
-                        {producto.stock}
-
+                        <strong>{stockDisponible}</strong>
                     </p>
 
 
@@ -150,14 +188,19 @@ function DetalleProducto() {
                     </p>
 
 
+                    
                     <button
                         className="btn btn-dark mt-3"
                         onClick={agregarProducto}
+                        disabled={producto.stock <= 0}
                     >
 
-                        Agregar al carrito
+                        {producto.stock <= 0
+                            ? "Agotado"
+                            : "Agregar al carrito"}
 
                     </button>
+
 
 
                     {agregado && (
@@ -169,6 +212,18 @@ function DetalleProducto() {
                         </div>
 
                     )}
+
+                    
+                    {error && (
+
+                        <div className="alert alert-danger mt-3">
+
+                            {error}
+
+                        </div>
+
+                    )}
+
 
                 </div>
 

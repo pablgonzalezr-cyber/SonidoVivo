@@ -41,37 +41,32 @@ function Checkout({
         );
 
 
+    
     function confirmarPedido(evento) {
 
         evento.preventDefault();
 
         setError("");
 
-
         if (direccion.trim().length < 5) {
 
-            setError(
-                "Ingresa una direccion valida."
-            );
+            setError("Ingresa una direccion valida.");
 
             return;
 
         }
-
 
         if (carrito.length === 0) {
 
-            setError(
-                "No hay productos en el carrito."
-            );
+            setError("No hay productos en el carrito.");
 
             return;
 
         }
 
+        try {
 
-        const pedido =
-            crearPedido({
+            const pedido = crearPedido({
 
                 usuario: sesion,
 
@@ -81,17 +76,24 @@ function Checkout({
 
             });
 
+            vaciarCarrito();
 
-        vaciarCarrito();
+            setCarrito([]);
 
+            setDireccion("");
 
-        setCarrito([]);
+            setPedidoCreado(pedido);
 
-        setDireccion("");
+        } catch (error) {
 
-        setPedidoCreado(pedido);
+            setError(
+                error.message || "No se pudo confirmar el pedido."
+            );
+
+        }
 
     }
+
 
 
     if (pedidoCreado) {

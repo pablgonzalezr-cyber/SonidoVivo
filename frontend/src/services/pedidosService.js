@@ -1,3 +1,7 @@
+import {
+    descontarStock
+} from "./productosService";
+
 const CLAVE_PEDIDOS = "sonidoVivoPedidos";
 
 
@@ -72,13 +76,15 @@ function crearPedido({
     };
 
 
-    pedidos.push(nuevoPedido);
+    
+    descontarStock(productos);
 
+    pedidos.push(nuevoPedido);
 
     guardarPedidos(pedidos);
 
-
     return nuevoPedido;
+
 
 }
 
