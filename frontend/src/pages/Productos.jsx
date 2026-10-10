@@ -14,6 +14,14 @@ function Productos() {
 
     const [categoria, setCategoria] = useState("Todas");
 
+    const categorias = [...new Set(
+        productos
+            .map((producto) => producto.categoria?.trim())
+            .filter(Boolean)
+    )].sort((a, b) => a.localeCompare(b, "es"));
+
+
+
 
     const productosFiltrados = productos.filter((producto) => {
 
@@ -104,29 +112,18 @@ function Productos() {
                             Todas
                         </option>
 
-                        <option value="Guitarras Acústicas">
-                            Guitarras Acústicas
+                        <option value="Todas">
+                            Todas
                         </option>
 
-                        <option value="Guitarras Eléctricas">
-                            Guitarras Eléctricas
-                        </option>
-
-                        <option value="Bajos Eléctricos">
-                            Bajos Eléctricos
-                        </option>
-
-                        <option value="Baterías">
-                            Baterías
-                        </option>
-
-                        <option value="Teclados y Pianos">
-                            Teclados y Pianos
-                        </option>
-
-                        <option value="Micrófonos">
-                            Micrófonos
-                        </option>
+                        {categorias.map((nombreCategoria) => (
+                            <option
+                                key={nombreCategoria}
+                                value={nombreCategoria}
+                            >
+                                {nombreCategoria}
+                            </option>
+                        ))}
 
                     </select>
 

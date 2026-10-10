@@ -140,10 +140,11 @@ function PanelAdmin() {
 
                 <p className="text-secondary mb-0">
 
-                    La gestion de productos,
-                    usuarios y pedidos sera incorporada
-                    en las siguientes iteraciones
-                    del proyecto.
+                    Desde este panel puedes administrar los productos
+                    del catálogo y consultar o actualizar los pedidos.
+                    La información se almacena localmente como simulación
+                    de esta etapa del proyecto.
+
 
                 </p>
 

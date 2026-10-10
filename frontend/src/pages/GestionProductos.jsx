@@ -47,7 +47,12 @@ function GestionProductos() {
 
     const [error, setError] =
         useState("");
-
+    
+    const categoriasExistentes = [...new Set(
+        productos
+            .map((producto) => producto.categoria?.trim())
+            .filter(Boolean)
+    )].sort((a, b) => a.localeCompare(b, "es"));
 
     function limpiarFormulario() {
 
@@ -92,18 +97,21 @@ function GestionProductos() {
         }
 
 
+        const precioNumero = Number(precio);
+        const stockNumero = Number(stock);
+
         if (
-            Number(precio) <= 0 ||
-            Number(stock) < 0
+            !Number.isSafeInteger(precioNumero) ||
+            precioNumero <= 0 ||
+            !Number.isSafeInteger(stockNumero) ||
+            stockNumero < 0
         ) {
-
             setError(
-                "Precio y stock deben tener valores validos."
+                "El precio debe ser un entero positivo y el stock un entero igual o mayor que cero."
             );
-
             return;
-
         }
+
 
 
         const producto = {
@@ -123,11 +131,9 @@ function GestionProductos() {
             modelo:
                 modelo.trim(),
 
-            precio:
-                Number(precio),
+            precio: precioNumero,
 
-            stock:
-                Number(stock),
+            stock: stockNumero,
 
             descripcion:
                 descripcion.trim()
@@ -359,6 +365,7 @@ function GestionProductos() {
                             <input
                                 type="text"
                                 className="form-control"
+                                list="categoriasSugeridas"
                                 value={categoria}
                                 onChange={(evento) =>
                                     setCategoria(
@@ -366,6 +373,12 @@ function GestionProductos() {
                                     )
                                 }
                             />
+
+                            <datalist id="categoriasSugeridas">
+                                    {categoriasExistentes.map((item) => (
+                                        <option key={item} value={item} />
+                                    ))}
+                                </datalist>
 
                         </div>
 
@@ -426,7 +439,9 @@ function GestionProductos() {
 
 
                             <input
-                                type="number"
+                                type="text"
+                                min="1"
+                                step="1"
                                 className="form-control"
                                 value={precio}
                                 onChange={(evento) =>
@@ -449,7 +464,9 @@ function GestionProductos() {
 
 
                             <input
-                                type="number"
+                                type="tex"
+                                min="0"
+                                step="1"
                                 className="form-control"
                                 value={stock}
                                 onChange={(evento) =>
