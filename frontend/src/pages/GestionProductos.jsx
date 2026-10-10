@@ -505,7 +505,7 @@ function GestionProductos() {
                     </div>
 
 
-                    <div className="mt-4 d-flex gap-2">
+                    <div className="mt-4 d-flex flex-wrap gap-2">
 
                         <button
                             type="submit"
@@ -549,7 +549,7 @@ function GestionProductos() {
 
             <div className="table-responsive">
 
-                <table className="table table-striped align-middle">
+                <table className="table table-striped align-middle tabla-productos">
 
                     <thead>
 
@@ -594,7 +594,7 @@ function GestionProductos() {
 
                                 <td>
 
-                                    <div className="d-flex gap-2">
+                                    <div className="d-flex flex-wrap gap-2">
 
                                         <button
                                             type="button"

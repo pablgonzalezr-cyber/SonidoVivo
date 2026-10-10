@@ -62,7 +62,7 @@ function GestionPedidos() {
 
                 <div className="table-responsive mt-4">
 
-                    <table className="table table-striped align-middle">
+                    <table className="table table-striped align-middle tabla-pedidos">
 
                         <thead>
 

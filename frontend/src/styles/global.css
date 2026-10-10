@@ -107,3 +107,77 @@ body {
 
     font-size: 70px;
 }
+
+.navbar .navbar-brand {
+    font-weight: 700;
+}
+
+.contenido-principal {
+    min-width: 0;
+}
+
+.tabla-productos,
+.tabla-pedidos {
+    min-width: 640px;
+}
+
+.tabla-productos th,
+.tabla-pedidos th {
+    white-space: nowrap;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        padding-top: 0.5rem;
+        padding-bottom: 0.75rem;
+    }
+
+    .navbar-nav .nav-link {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .logo-sonido-vivo {
+        font-size: 26px;
+    }
+
+    .icono-musical {
+        font-size: 32px;
+    }
+
+    .subtitulo-header {
+        font-size: 0.9rem;
+    }
+
+    .header-sonido-vivo .container {
+        padding-top: 1.25rem !important;
+        padding-bottom: 1.25rem !important;
+    }
+
+    .contenido-principal .container.py-5 {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    .contenido-principal .display-4 {
+        font-size: 2.25rem;
+    }
+
+    .contenido-principal .card.p-4 {
+        padding: 1rem !important;
+    }
+
+    .contenido-principal form .btn[type="submit"] {
+        width: 100%;
+    }
+
+    .producto-imagen-placeholder {
+        height: 150px;
+    }
+
+    .table-responsive {
+        -webkit-overflow-scrolling: touch;
+    }
+}

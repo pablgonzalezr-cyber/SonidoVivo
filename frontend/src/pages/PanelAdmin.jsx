@@ -150,7 +150,7 @@ function PanelAdmin() {
 
             </div>
 
-            <div className="mt-4">
+            <div className="d-flex flex-wrap gap-2 mt-4">
 
                 <Link
                     to="/admin/productos"
@@ -163,7 +163,7 @@ function PanelAdmin() {
 
                 <Link
                     to="/admin/pedidos"
-                    className="btn btn-outline-dark ms-2"
+                    className="btn btn-outline-dark"
                 >
 
                     Gestionar pedidos

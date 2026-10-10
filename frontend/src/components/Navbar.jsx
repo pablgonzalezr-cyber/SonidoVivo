@@ -1,229 +1,171 @@
-import {
-    NavLink
-} from "react-router-dom";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
+function Navbar({ sesion, onLogout }) {
+    const [menuAbierto, setMenuAbierto] = useState(false);
 
-function Navbar({
-    sesion,
-    onLogout
-}) {
+    function cerrarMenu() {
+        setMenuAbierto(false);
+    }
+
+    function salir() {
+        cerrarMenu();
+        onLogout();
+    }
 
     return (
-
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-
+        <nav
+            className="navbar navbar-expand-lg navbar-dark bg-dark"
+            aria-label="Navegación principal"
+        >
             <div className="container">
-
                 <NavLink
                     className="navbar-brand"
                     to="/"
+                    onClick={cerrarMenu}
                 >
-
                     Sonido Vivo
-
                 </NavLink>
-
 
                 <button
                     className="navbar-toggler"
                     type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#navbarPrincipal"
                     aria-controls="navbarPrincipal"
-                    aria-expanded="false"
-                    aria-label="Abrir navegacion"
+                    aria-expanded={menuAbierto}
+                    aria-label={
+                        menuAbierto
+                            ? "Cerrar navegación"
+                            : "Abrir navegación"
+                    }
+                    onClick={() => setMenuAbierto(!menuAbierto)}
                 >
-
-                    <span className="navbar-toggler-icon">
-                    </span>
-
+                    <span className="navbar-toggler-icon" />
                 </button>
 
-
                 <div
-                    className="collapse navbar-collapse"
                     id="navbarPrincipal"
+                    className={
+                        `collapse navbar-collapse ${menuAbierto ? "show" : ""}`
+                    }
                 >
-
-                    <ul className="navbar-nav ms-auto">
-
+                    <ul className="navbar-nav ms-auto align-items-lg-center">
                         <li className="nav-item">
-
                             <NavLink
                                 className="nav-link"
                                 to="/"
+                                onClick={cerrarMenu}
                             >
-
                                 Inicio
-
                             </NavLink>
-
                         </li>
 
-
                         <li className="nav-item">
-
                             <NavLink
                                 className="nav-link"
                                 to="/productos"
+                                onClick={cerrarMenu}
                             >
-
                                 Productos
-
                             </NavLink>
-
                         </li>
 
-
                         <li className="nav-item">
-
                             <NavLink
                                 className="nav-link"
                                 to="/contacto"
+                                onClick={cerrarMenu}
                             >
-
                                 Contacto
-
                             </NavLink>
-
                         </li>
 
-
                         <li className="nav-item">
-
                             <NavLink
                                 className="nav-link"
                                 to="/carrito"
+                                onClick={cerrarMenu}
                             >
-
                                 Carrito
-
                             </NavLink>
-
                         </li>
 
-
                         {!sesion ? (
-
                             <>
-
                                 <li className="nav-item">
-
                                     <NavLink
                                         className="nav-link"
                                         to="/registro"
+                                        onClick={cerrarMenu}
                                     >
-
                                         Registrarse
-
                                     </NavLink>
-
                                 </li>
-
-
                                 <li className="nav-item">
-
                                     <NavLink
                                         className="nav-link"
                                         to="/login"
+                                        onClick={cerrarMenu}
                                     >
-
-                                        Iniciar sesion
-
+                                        Iniciar sesión
                                     </NavLink>
-
                                 </li>
-
                             </>
-
                         ) : (
-
                             <>
-
                                 {sesion.rol === "ADMIN" && (
-
                                     <li className="nav-item">
-
                                         <NavLink
                                             className="nav-link"
                                             to="/admin"
+                                            onClick={cerrarMenu}
                                         >
-
-                                            Administracion
-
+                                            Administración
                                         </NavLink>
-
                                     </li>
-
                                 )}
 
                                 <li className="nav-item">
-
                                     <NavLink
                                         className="nav-link"
                                         to="/mis-pedidos"
+                                        onClick={cerrarMenu}
                                     >
-
-                                        Mis Pedidos
-
+                                        Mis pedidos
                                     </NavLink>
-
                                 </li>
 
-
                                 <li className="nav-item">
-
                                     <NavLink
                                         className="nav-link"
                                         to="/mi-cuenta"
+                                        onClick={cerrarMenu}
                                     >
-
-                                        Mi Cuenta
-
+                                        Mi cuenta
                                     </NavLink>
-
                                 </li>
 
                                 <li className="nav-item">
-
                                     <span className="nav-link">
-
                                         Hola, {sesion.nombre}
-
                                     </span>
-
                                 </li>
 
-
                                 <li className="nav-item">
-
                                     <button
                                         type="button"
                                         className="nav-link btn btn-link"
-                                        onClick={onLogout}
+                                        onClick={salir}
                                     >
-
-                                        Cerrar sesion
-
+                                        Cerrar sesión
                                     </button>
-
                                 </li>
-
                             </>
-
                         )}
-
                     </ul>
-
                 </div>
-
             </div>
-
         </nav>
-
     );
-
 }
-
 
 export default Navbar;
