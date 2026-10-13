@@ -1,4 +1,6 @@
 import PanelVendedor from "./pages/PanelVendedor";
+import GestionUsuarios from "./pages/GestionUsuarios";
+
 
 import {
     useEffect,
@@ -290,7 +292,18 @@ function App() {
                     }
                 />
 
-
+                
+                <Route
+                    path="/admin/usuarios"
+                    element={
+                        <RutaProtegida
+                            sesion={sesion}
+                            rolesPermitidos={["ADMIN"]}
+                        >
+                            <GestionUsuarios sesion={sesion} />
+                        </RutaProtegida>
+                    }
+                />
 
 
                 <Route

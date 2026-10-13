@@ -170,6 +170,15 @@ function PanelAdmin() {
 
                 </Link>
 
+                
+                <Link
+                    to="/admin/usuarios"
+                    className="btn btn-outline-dark"
+                >
+                    Gestionar usuarios
+                </Link>
+
+
             </div>
 
         </section>
