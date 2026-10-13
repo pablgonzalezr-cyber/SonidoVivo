@@ -119,9 +119,41 @@ function inicializarAdministrador() {
 }
 
 
+function inicializarVendedor() {
+
+    const usuarios = obtenerUsuarios();
+
+    const existeVendedor = usuarios.some(
+        (usuario) =>
+            usuario.rol === "VENDEDOR" ||
+            usuario.correo === "vendedor@sonidovivo.cl"
+    );
+
+    if (existeVendedor) {
+        return;
+    }
+
+    const vendedor = {
+        id: "vendedor-demo",
+        nombre: "Vendedor Sonido Vivo",
+        correo: "vendedor@sonidovivo.cl",
+        contrasena: "vendedor123",
+        rol: "VENDEDOR"
+    };
+
+    usuarios.push(vendedor);
+
+    guardarUsuarios(usuarios);
+
+}
+
+
+
+
 export {
     obtenerUsuarios,
     correoRegistrado,
     registrarUsuario,
-    inicializarAdministrador
+    inicializarAdministrador,
+    inicializarVendedor
 };

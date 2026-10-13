@@ -194,6 +194,38 @@ function descontarStock(productosComprados) {
 }
 
 
+function actualizarStock(codigo, nuevoStock) {
+
+    if (
+        !Number.isSafeInteger(nuevoStock) ||
+        nuevoStock < 0
+    ) {
+        throw new Error("El stock debe ser un numero entero mayor o igual a cero.");
+    }
+
+    const productos = obtenerProductos();
+
+    const productoExistente = productos.find(
+        (producto) => producto.codigo === codigo
+    );
+
+    if (!productoExistente) {
+        throw new Error("El producto no existe.");
+    }
+
+    const productosActualizados = productos.map(
+        (producto) =>
+            producto.codigo === codigo
+                ? { ...producto, stock: nuevoStock }
+                : producto
+    );
+
+    guardarProductos(productosActualizados);
+
+    return productosActualizados;
+
+}
+
 
 
 export {
@@ -203,5 +235,6 @@ export {
     agregarProducto,
     actualizarProducto,
     eliminarProducto,
-    descontarStock
+    descontarStock,
+    actualizarStock
 };

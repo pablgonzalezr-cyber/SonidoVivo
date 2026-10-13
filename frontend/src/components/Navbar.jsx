@@ -124,15 +124,33 @@ function Navbar({ sesion, onLogout }) {
                                     </li>
                                 )}
 
-                                <li className="nav-item">
-                                    <NavLink
-                                        className="nav-link"
-                                        to="/mis-pedidos"
-                                        onClick={cerrarMenu}
-                                    >
-                                        Mis pedidos
-                                    </NavLink>
-                                </li>
+                                
+                                {["ADMIN", "VENDEDOR"].includes(sesion.rol) && (
+                                    <li className="nav-item">
+                                        <NavLink
+                                            className="nav-link"
+                                            to="/vendedor"
+                                            onClick={cerrarMenu}
+                                        >
+                                            Control de stock
+                                        </NavLink>
+                                    </li>
+                                )}
+
+
+                                
+                                {sesion.rol === "CLIENTE" && (
+                                    <li className="nav-item">
+                                        <NavLink
+                                            className="nav-link"
+                                            to="/mis-pedidos"
+                                            onClick={cerrarMenu}
+                                        >
+                                            Mis pedidos
+                                        </NavLink>
+                                    </li>
+                                )}
+
 
                                 <li className="nav-item">
                                     <NavLink

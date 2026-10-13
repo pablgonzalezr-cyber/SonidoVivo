@@ -1,7 +1,10 @@
+import PanelVendedor from "./pages/PanelVendedor";
+
 import {
     useEffect,
     useState
 } from "react";
+
 
 import {
     Routes,
@@ -52,9 +55,12 @@ import {
     cerrarSesion
 } from "./services/authService";
 
+
 import {
-    inicializarAdministrador
+    inicializarAdministrador,
+    inicializarVendedor
 } from "./services/usuariosService";
+
 
 import {
     inicializarProductos
@@ -80,13 +86,17 @@ function App() {
         useState(obtenerSesion());
 
 
+   
     useEffect(() => {
 
-    inicializarAdministrador();
+        inicializarAdministrador();
 
-    inicializarProductos();
+        inicializarVendedor();
+
+        inicializarProductos();
 
     }, []);
+
 
 
     function usuarioInicioSesion(usuario) {
@@ -214,12 +224,27 @@ function App() {
                     }
                 />
 
+                
+                <Route
+                    path="/vendedor"
+                    element={
+                        <RutaProtegida
+                            sesion={sesion}
+                            rolesPermitidos={["ADMIN", "VENDEDOR"]}
+                        >
+                            <PanelVendedor />
+                        </RutaProtegida>
+                    }
+                />
+
+
                 <Route
                     path="/checkout"
                     element={
 
                         <RutaProtegida
                             sesion={sesion}
+                            rolesPermitidos={["CLIENTE"]}
                         >
 
                             <Checkout
@@ -237,6 +262,7 @@ function App() {
 
                         <RutaProtegida
                             sesion={sesion}
+                            rolesPermitidos={["CLIENTE"]}
                         >
 
                             <MisPedidos
@@ -254,7 +280,7 @@ function App() {
 
                         <RutaProtegida
                             sesion={sesion}
-                            rolesPermitidos={["ADMIN"]}
+                            rolesPermitidos={["ADMIN", "VENDEDOR"]}
                         >
 
                             <GestionPedidos />
