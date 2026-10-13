@@ -1,4 +1,9 @@
 import {
+    migrarCarritoInvitado
+} from "./carritoService";
+
+
+import {
     obtenerUsuarios
 } from "./usuariosService";
 
@@ -39,6 +44,12 @@ function iniciarSesion(correo, contrasena) {
         rol: usuarioEncontrado.rol
 
     };
+
+    
+    if (sesion.rol === "CLIENTE") {
+        migrarCarritoInvitado(sesion.id);
+    }
+
 
 
     localStorage.setItem(

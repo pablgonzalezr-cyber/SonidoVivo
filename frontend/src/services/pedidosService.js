@@ -1,6 +1,8 @@
 import {
-    descontarStock
+    descontarStock,
+    obtenerProductoPorCodigo
 } from "./productosService";
+
 
 const CLAVE_PEDIDOS = "sonidoVivoPedidos";
 
@@ -41,44 +43,97 @@ function crearPedido({
     tipoEntrega = "DESPACHO"
 }) {
 
+    if (!usuario || usuario.rol !== "CLIENTE") {
+        throw new Error(
+            "Debes iniciar sesión como cliente para comprar."
+        );
+    }
+
     if (!["DESPACHO", "RETIRO"].includes(tipoEntrega)) {
-        throw new Error("Selecciona un tipo de entrega valido.");
+        throw new Error(
+            "Selecciona un tipo de entrega válido."
+        );
     }
 
     if (!Array.isArray(productos) || productos.length === 0) {
-        throw new Error("No hay productos en el pedido.");
+        throw new Error(
+            "No hay productos en el pedido."
+        );
     }
 
-    const direccionFinal = tipoEntrega === "DESPACHO"
-        ? String(direccion).trim()
-        : "Retiro en tienda";
+    const direccionFinal = tipoEntrega === "RETIRO"
+        ? "Retiro en tienda"
+        : String(direccion).trim();
 
-    if (tipoEntrega === "DESPACHO" && direccionFinal.length < 5) {
-        throw new Error("Ingresa una direccion valida.");
+    if (
+        tipoEntrega === "DESPACHO" &&
+        direccionFinal.length < 5
+    ) {
+        throw new Error(
+            "Ingresa una dirección válida."
+        );
     }
 
-    const pedidos = obtenerPedidos();
+    const productosActualizados = productos.map((item) => {
 
-    const total = productos.reduce(
+        if (
+            !Number.isSafeInteger(item.cantidad) ||
+            item.cantidad <= 0
+        ) {
+            throw new Error(
+                "La cantidad solicitada no es válida."
+            );
+        }
+
+        const productoActual = obtenerProductoPorCodigo(
+            item.codigo
+        );
+
+        if (!productoActual) {
+            throw new Error(
+                "Uno de los productos ya no está disponible."
+            );
+        }
+
+        if (
+            Number(item.precio) !==
+            Number(productoActual.precio)
+        ) {
+            throw new Error(
+                `El precio de ${productoActual.nombre} cambió. Vuelve al carrito para revisar el nuevo valor.`
+            );
+        }
+
+        return {
+            ...productoActual,
+            cantidad: item.cantidad
+        };
+
+    });
+
+    const total = productosActualizados.reduce(
         (acumulador, producto) =>
-            acumulador + producto.precio * producto.cantidad,
+            acumulador +
+            producto.precio * producto.cantidad,
         0
     );
+
+    const pedidos = obtenerPedidos();
 
     const nuevoPedido = {
         id: Date.now(),
         usuarioId: usuario.id,
         cliente: usuario.nombre,
         correo: usuario.correo,
-        tipoEntrega: tipoEntrega,
+        tipoEntrega,
         direccion: direccionFinal,
         fecha: new Date().toLocaleString("es-CL"),
         estado: "PENDIENTE",
-        productos: productos,
-        total: total
+        productos: productosActualizados,
+        total
     };
 
-    descontarStock(productos);
+    descontarStock(productosActualizados);
 
     pedidos.push(nuevoPedido);
 
