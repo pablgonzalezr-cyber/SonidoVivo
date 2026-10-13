@@ -1,43 +1,27 @@
+
 import {
     obtenerPedidosPorUsuario
 } from "../services/pedidosService";
 
+function MisPedidos({ sesion }) {
 
-function MisPedidos({
-    sesion
-}) {
-
-    const pedidos =
-        obtenerPedidosPorUsuario(
-            sesion.id
-        );
-
+    const pedidos = obtenerPedidosPorUsuario(sesion.id);
 
     return (
-
         <section className="container py-5">
 
             <h2 className="fw-bold">
-
-                Mis Pedidos
-
+                Mis pedidos
             </h2>
 
-
             <p className="text-secondary">
-
-                Historial de compras
-                realizadas en Sonido Vivo.
-
+                Historial de compras realizadas en Sonido Vivo.
             </p>
-
 
             {pedidos.length === 0 ? (
 
                 <div className="alert alert-secondary">
-
-                    Todavia no tienes pedidos.
-
+                    Todavía no tienes pedidos.
                 </div>
 
             ) : (
@@ -58,62 +42,60 @@ function MisPedidos({
                                     <div>
 
                                         <h3 className="h5">
-
                                             Pedido #{pedido.id}
-
                                         </h3>
 
-
                                         <p className="text-secondary mb-0">
-
                                             {pedido.fecha}
-
                                         </p>
 
                                     </div>
 
-
                                     <span className="badge bg-dark align-self-start">
-
                                         {pedido.estado}
-
                                     </span>
 
                                 </div>
 
-
                                 <hr />
 
+                                <p>
+                                    <strong>Entrega: </strong>
+                                    {pedido.tipoEntrega === "RETIRO"
+                                        ? "Retiro en tienda"
+                                        : "Despacho a domicilio"}
+                                </p>
 
-                                {pedido.productos.map(
-                                    (producto) => (
+                                <p>
+                                    <strong>
+                                        {pedido.tipoEntrega === "RETIRO"
+                                            ? "Lugar: "
+                                            : "Dirección: "}
+                                    </strong>
 
-                                        <p
-                                            key={producto.codigo}
-                                            className="mb-1"
-                                        >
+                                    {pedido.direccion}
+                                </p>
 
-                                            {producto.nombre}
-                                            {" x "}
-                                            {producto.cantidad}
+                                <h4 className="h6">
+                                    Productos
+                                </h4>
 
-                                        </p>
+                                {pedido.productos.map((producto) => (
 
-                                    )
-                                )}
+                                    <p
+                                        key={producto.codigo}
+                                        className="mb-1"
+                                    >
+                                        {producto.nombre} x {producto.cantidad}
+                                    </p>
 
+                                ))}
 
                                 <hr />
-
 
                                 <p className="fw-bold mb-0">
-
-                                    Total:
-                                    {" "}
-                                    $
-                                    {pedido.total
-                                        .toLocaleString("es-CL")}
-
+                                    Total: $
+                                    {pedido.total.toLocaleString("es-CL")}
                                 </p>
 
                             </div>
@@ -127,10 +109,7 @@ function MisPedidos({
             )}
 
         </section>
-
     );
-
 }
-
 
 export default MisPedidos;

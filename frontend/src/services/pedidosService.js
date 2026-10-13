@@ -33,50 +33,51 @@ function guardarPedidos(pedidos) {
 }
 
 
+
 function crearPedido({
     usuario,
     productos,
-    direccion
+    direccion = "",
+    tipoEntrega = "DESPACHO"
 }) {
+
+    if (!["DESPACHO", "RETIRO"].includes(tipoEntrega)) {
+        throw new Error("Selecciona un tipo de entrega valido.");
+    }
+
+    if (!Array.isArray(productos) || productos.length === 0) {
+        throw new Error("No hay productos en el pedido.");
+    }
+
+    const direccionFinal = tipoEntrega === "DESPACHO"
+        ? String(direccion).trim()
+        : "Retiro en tienda";
+
+    if (tipoEntrega === "DESPACHO" && direccionFinal.length < 5) {
+        throw new Error("Ingresa una direccion valida.");
+    }
 
     const pedidos = obtenerPedidos();
 
-
-    const total =
-        productos.reduce(
-            (acumulador, producto) =>
-                acumulador +
-                producto.precio *
-                producto.cantidad,
-            0
-        );
-
+    const total = productos.reduce(
+        (acumulador, producto) =>
+            acumulador + producto.precio * producto.cantidad,
+        0
+    );
 
     const nuevoPedido = {
-
         id: Date.now(),
-
         usuarioId: usuario.id,
-
         cliente: usuario.nombre,
-
         correo: usuario.correo,
-
-        direccion: direccion.trim(),
-
-        fecha:
-            new Date().toLocaleString("es-CL"),
-
+        tipoEntrega: tipoEntrega,
+        direccion: direccionFinal,
+        fecha: new Date().toLocaleString("es-CL"),
         estado: "PENDIENTE",
-
         productos: productos,
-
         total: total
-
     };
 
-
-    
     descontarStock(productos);
 
     pedidos.push(nuevoPedido);
@@ -84,9 +85,8 @@ function crearPedido({
     guardarPedidos(pedidos);
 
     return nuevoPedido;
-
-
 }
+
 
 
 function obtenerPedidosPorUsuario(
