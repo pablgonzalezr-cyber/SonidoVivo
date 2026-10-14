@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <rect width="800" height="600" fill="#e5e7eb"/>
+  <circle cx="400" cy="250" r="115" fill="#111827"/>
+  <text x="400" y="298" text-anchor="middle" font-family="Arial, sans-serif" font-size="150" fill="#d89b2b">♫</text>
+  <text x="400" y="435" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" fill="#374151">Sonido Vivo</text>
+  <text x="400" y="478" text-anchor="middle" font-family="Arial, sans-serif" font-size="23" fill="#6b7280">Imagen no disponible</text>
+</svg>

@@ -1,4 +1,8 @@
 import { Link } from "react-router-dom";
+import {
+    obtenerImagenProducto,
+    usarImagenRespaldo
+} from "../utils/imagenesProductos";
 
 
 function ProductoCard({ producto }) {
@@ -7,11 +11,13 @@ function ProductoCard({ producto }) {
 
         <article className="card h-100 producto-card">
 
-            <div className="producto-imagen-placeholder">
-
-                ♫
-
-            </div>
+            <img
+                src={obtenerImagenProducto(producto)}
+                alt={`Imagen del producto ${producto.nombre}`}
+                className="sv-foto-producto card-img-top"
+                loading="lazy"
+                onError={usarImagenRespaldo}
+            />
 
 
             <div className="card-body d-flex flex-column">

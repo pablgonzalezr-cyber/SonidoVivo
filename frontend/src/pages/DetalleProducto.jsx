@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import {
+    obtenerImagenProducto,
+    usarImagenRespaldo
+} from "../utils/imagenesProductos";
 
 import {
     obtenerProductoPorCodigo
@@ -123,11 +127,12 @@ function DetalleProducto() {
 
                 <div className="col-12 col-md-5">
 
-                    <div className="producto-imagen-placeholder rounded">
-
-                        ♫
-
-                    </div>
+                    <img
+                        src={obtenerImagenProducto(producto)}
+                        alt={`Imagen de ${producto.nombre}`}
+                        className="sv-foto-detalle rounded"
+                        onError={usarImagenRespaldo}
+                    />
 
                 </div>
 
