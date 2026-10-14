@@ -286,6 +286,10 @@ function Checkout({ sesion }) {
                             >
                                 Podrás retirar tu pedido en Sonido Vivo
                                 una vez que esté listo.
+
+                                <Link to="/ubicaciones" className="d-inline-block mt-2">
+                                    Ver zonas referenciales en el mapa
+                                </Link>
                             </div>
 
                         )}

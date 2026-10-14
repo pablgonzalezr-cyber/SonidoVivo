@@ -1,6 +1,7 @@
 import PanelVendedor from "./pages/PanelVendedor";
 import GestionUsuarios from "./pages/GestionUsuarios";
 import ReportesVentas from "./pages/ReportesVentas";
+import Ubicaciones from "./pages/Ubicaciones";
 
 import {
     useEffect,
@@ -153,6 +154,10 @@ function App() {
                     element={<Contacto />}
                 />
 
+                <Route
+                    path="/ubicaciones"
+                    element={<Ubicaciones />}
+                />
 
                 <Route
                     path="/carrito"

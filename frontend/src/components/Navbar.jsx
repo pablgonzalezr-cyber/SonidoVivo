@@ -82,6 +82,16 @@ function Navbar({ sesion, onLogout }) {
                         <li className="nav-item">
                             <NavLink
                                 className="nav-link"
+                                to="/ubicaciones"
+                                onClick={cerrarMenu}
+                            >
+                                Ubicaciones
+                            </NavLink>
+                        </li>
+
+                        <li className="nav-item">
+                            <NavLink
+                                className="nav-link"
                                 to="/carrito"
                                 onClick={cerrarMenu}
                             >
