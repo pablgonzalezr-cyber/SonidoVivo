@@ -6,6 +6,16 @@ export default defineConfig({
 
     test: {
         environment: "jsdom",
-        globals: true
+        globals: true,
+
+        coverage: {
+            provider: "v8",
+            reporter: ["text", "html"],
+            include: ["src/**/*.{js,jsx}"],
+            exclude: [
+                "src/tests/**",
+                "src/main.jsx"
+            ]
+        }
     }
 });
