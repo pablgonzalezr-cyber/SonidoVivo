@@ -314,8 +314,13 @@ function GestionProductos() {
 
                             </label>
 
+                            <label htmlFor="codigoProducto" className="form-label">
+                                Codigo
+                            </label>
+
 
                             <input
+                                id="codigoProducto"
                                 type="text"
                                 className="form-control"
                                 value={codigo}
@@ -338,8 +343,13 @@ function GestionProductos() {
 
                             </label>
 
+                            <label htmlFor="nombreProducto" className="form-label">
+                                Nombre
+                            </label>
+
 
                             <input
+                                id="nombreProducto"
                                 type="text"
                                 className="form-control"
                                 value={nombre}
@@ -357,12 +367,17 @@ function GestionProductos() {
 
                             <label className="form-label">
 
-                                Categoria
+                                Categoría
 
+                            </label>
+
+                            <label htmlFor="categoriaAdmin" className="form-label">
+                                Categoría
                             </label>
 
 
                             <input
+                                id="categoriaAdmin"
                                 type="text"
                                 className="form-control"
                                 list="categoriasSugeridas"
@@ -392,7 +407,13 @@ function GestionProductos() {
                             </label>
 
 
+                            <label htmlFor="marcaProducto" className="form-label">
+                                Marca
+                            </label>
+
+
                             <input
+                                id="marcaProducto"
                                 type="text"
                                 className="form-control"
                                 value={marca}
@@ -414,8 +435,13 @@ function GestionProductos() {
 
                             </label>
 
+                            <label htmlFor="modeloProducto" className="form-label">
+                                Modelo
+                            </label>
+
 
                             <input
+                                id="modeloProducto"
                                 type="text"
                                 className="form-control"
                                 value={modelo}
@@ -437,8 +463,13 @@ function GestionProductos() {
 
                             </label>
 
+                            <label htmlFor="precioProducto" className="form-label">
+                                Precio
+                            </label>
+
 
                             <input
+                                id="precioProducto"
                                 type="text"
                                 min="1"
                                 step="1"
@@ -462,9 +493,14 @@ function GestionProductos() {
 
                             </label>
 
+                            <label htmlFor="stockProducto" className="form-label">
+                                Stock
+                            </label>
+
 
                             <input
-                                type="tex"
+                                id="stockProducto"
+                                type="text"
                                 min="0"
                                 step="1"
                                 className="form-control"
@@ -487,8 +523,13 @@ function GestionProductos() {
 
                             </label>
 
+                            <label htmlFor="descripcionProducto" className="form-label">
+                                Descripcion
+                            </label>
+
 
                             <textarea
+                                id="descripcionProducto"
                                 className="form-control"
                                 rows="3"
                                 value={descripcion}

@@ -112,10 +112,6 @@ function Productos() {
                             Todas
                         </option>
 
-                        <option value="Todas">
-                            Todas
-                        </option>
-
                         {categorias.map((nombreCategoria) => (
                             <option
                                 key={nombreCategoria}

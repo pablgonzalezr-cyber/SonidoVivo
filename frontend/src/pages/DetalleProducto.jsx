@@ -192,11 +192,11 @@ function DetalleProducto() {
                     <button
                         className="btn btn-dark mt-3"
                         onClick={agregarProducto}
-                        disabled={producto.stock <= 0}
+                        disabled={stockDisponible <= 0}
                     >
 
-                        {producto.stock <= 0
-                            ? "Agotado"
+                        {stockDisponible <= 0
+                            ? "Sin unidades disponibles"
                             : "Agregar al carrito"}
 
                     </button>
