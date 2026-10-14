@@ -170,7 +170,6 @@ function PanelAdmin() {
 
                 </Link>
 
-                
                 <Link
                     to="/admin/usuarios"
                     className="btn btn-outline-dark"
@@ -178,7 +177,13 @@ function PanelAdmin() {
                     Gestionar usuarios
                 </Link>
 
-
+                <Link
+                    to="/admin/reportes"
+                    className="btn btn-outline-dark"
+                >
+                    Reportes de ventas
+                </Link>
+                
             </div>
 
         </section>

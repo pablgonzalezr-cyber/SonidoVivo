@@ -128,6 +128,7 @@ function crearPedido({
         tipoEntrega,
         direccion: direccionFinal,
         fecha: new Date().toLocaleString("es-CL"),
+        fechaISO: new Date().toISOString(),
         estado: "PENDIENTE",
         productos: productosActualizados,
         total
