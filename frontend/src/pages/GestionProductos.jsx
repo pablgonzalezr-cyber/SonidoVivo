@@ -308,12 +308,7 @@ function GestionProductos() {
 
                         <div className="col-md-4">
 
-                            <label className="form-label">
-
-                                Codigo
-
-                            </label>
-
+                        
                             <label htmlFor="codigoProducto" className="form-label">
                                 Codigo
                             </label>
@@ -336,12 +331,7 @@ function GestionProductos() {
 
 
                         <div className="col-md-8">
-
-                            <label className="form-label">
-
-                                Nombre
-
-                            </label>
+         
 
                             <label htmlFor="nombreProducto" className="form-label">
                                 Nombre
@@ -365,11 +355,6 @@ function GestionProductos() {
 
                         <div className="col-md-6">
 
-                            <label className="form-label">
-
-                                Categoría
-
-                            </label>
 
                             <label htmlFor="categoriaAdmin" className="form-label">
                                 Categoría
@@ -400,12 +385,6 @@ function GestionProductos() {
 
                         <div className="col-md-3">
 
-                            <label className="form-label">
-
-                                Marca
-
-                            </label>
-
 
                             <label htmlFor="marcaProducto" className="form-label">
                                 Marca
@@ -429,11 +408,6 @@ function GestionProductos() {
 
                         <div className="col-md-3">
 
-                            <label className="form-label">
-
-                                Modelo
-
-                            </label>
 
                             <label htmlFor="modeloProducto" className="form-label">
                                 Modelo
@@ -457,11 +431,6 @@ function GestionProductos() {
 
                         <div className="col-md-3">
 
-                            <label className="form-label">
-
-                                Precio
-
-                            </label>
 
                             <label htmlFor="precioProducto" className="form-label">
                                 Precio
@@ -470,7 +439,7 @@ function GestionProductos() {
 
                             <input
                                 id="precioProducto"
-                                type="text"
+                                type="number"
                                 min="1"
                                 step="1"
                                 className="form-control"
@@ -487,11 +456,6 @@ function GestionProductos() {
 
                         <div className="col-md-3">
 
-                            <label className="form-label">
-
-                                Stock
-
-                            </label>
 
                             <label htmlFor="stockProducto" className="form-label">
                                 Stock
@@ -500,7 +464,7 @@ function GestionProductos() {
 
                             <input
                                 id="stockProducto"
-                                type="text"
+                                type="number"
                                 min="0"
                                 step="1"
                                 className="form-control"
@@ -517,11 +481,6 @@ function GestionProductos() {
 
                         <div className="col-md-12">
 
-                            <label className="form-label">
-
-                                Descripcion
-
-                            </label>
 
                             <label htmlFor="descripcionProducto" className="form-label">
                                 Descripcion
@@ -531,7 +490,7 @@ function GestionProductos() {
                             <textarea
                                 id="descripcionProducto"
                                 className="form-control"
-                                rows="3"
+                                rows={3}
                                 value={descripcion}
                                 onChange={(evento) =>
                                     setDescripcion(
