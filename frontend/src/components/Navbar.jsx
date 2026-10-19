@@ -173,12 +173,6 @@ function Navbar({ sesion, onLogout }) {
                                 </li>
 
                                 <li className="nav-item">
-                                    <span className="nav-link">
-                                        Hola, {sesion.nombre}
-                                    </span>
-                                </li>
-
-                                <li className="nav-item">
                                     <button
                                         type="button"
                                         className="nav-link btn btn-link"
