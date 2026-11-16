@@ -139,6 +139,8 @@ public class SeguridadConfig {
                     .hasRole("ADMIN")
                 .requestMatchers("/api/vendedor/**")
                     .hasAnyRole("ADMIN", "VENDEDOR")
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll()
+                    .requestMatchers("/api/productos", "/api/productos/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth ->
