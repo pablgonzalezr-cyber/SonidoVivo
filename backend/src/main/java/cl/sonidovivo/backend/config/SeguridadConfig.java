@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +35,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+@EnableMethodSecurity
 public class SeguridadConfig {
 
     @Bean
@@ -139,8 +142,15 @@ public class SeguridadConfig {
                     .hasRole("ADMIN")
                 .requestMatchers("/api/vendedor/**")
                     .hasAnyRole("ADMIN", "VENDEDOR")
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/productos", "/api/productos/**").permitAll()
-                    .requestMatchers("/api/productos", "/api/productos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET,
+                    "/api/productos", "/api/productos/**").permitAll()
+                .requestMatchers(HttpMethod.POST,
+                    "/api/productos").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT,
+                    "/api/productos/*").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE,
+                    "/api/productos/*").hasRole("ADMIN")
+                .requestMatchers("/api/productos", "/api/productos/**").denyAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth ->
@@ -177,3 +187,4 @@ public class SeguridadConfig {
         return source;
     }
 }
+

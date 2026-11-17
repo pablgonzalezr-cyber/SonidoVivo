@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class ProductoController {
     }
 
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Producto> crear(
             @Valid @RequestBody ProductoRequest datos) {
@@ -48,6 +50,7 @@ public class ProductoController {
     }
 
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{codigo}")
     public Producto actualizar(
             @PathVariable String codigo,
@@ -56,6 +59,7 @@ public class ProductoController {
     }
 
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable String codigo) {
