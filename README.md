@@ -297,3 +297,22 @@ individuales y descriptivos, permitiendo identificar
 las funcionalidades implementadas y su evolución.
 
 
+## EP3 — Integracion inicial de catalogo con API REST
+
+El frontend React + Vite consulta el backend Spring Boot 4 y la base MariaDB incluida con XAMPP. La API CRUD `/api/productos` aparece en Swagger. GET es público; POST, PUT y DELETE requieren JWT con rol ADMIN.
+
+### Iniciar XAMPP, MariaDB y Spring Boot
+
+Iniciar MySQL y Apache desde XAMPP Control Panel. Crear `sonido_vivo` en phpMyAdmin (`http://localhost/phpmyadmin/`). Revisar el puerto de la fila MySQL: en el equipo de Pablo se usa 3307, pero cada estudiante debe utilizar SU puerto. En CMD, desde `backend/`, configurar `DB_PORT` y `JWT_SECRET` (Base64 de 32 bytes); `DB_PASSWORD` queda vacía si `root` de XAMPP no tiene clave o toma el valor local correspondiente si la tiene. No subir secretos. Ejecutar `mvn spring-boot:run`.
+
+- Salud: http://localhost:8080/api/salud
+- Productos: http://localhost:8080/api/productos
+- Swagger: http://localhost:8080/swagger-ui.html
+
+### Iniciar React
+
+En otra terminal, desde `frontend/`, ejecutar `npm install` y `npm run dev`. Abrir http://localhost:5173/productos. La URL base de la API se configura opcionalmente mediante `VITE_API_URL` (ver `frontend/.env.example`).
+
+### Alcance actual de la integracion
+
+La pagina del catalogo consulta productos reales del backend y gestiona estados de carga/error. El detalle individual, carrito, checkout y gestion administrativa del frontend todavia usan servicios simulados con localStorage: estas pantallas se migraran en etapas posteriores. Por tanto, los cambios realizados mediante Swagger pueden no reflejarse en esas pantallas hasta que se complete la integracion.
