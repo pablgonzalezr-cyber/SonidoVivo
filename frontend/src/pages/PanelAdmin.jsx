@@ -1,173 +1,146 @@
-import {
-    obtenerProductos
-} from "../services/productosService";
-
-import {
-    obtenerUsuarios
-} from "../services/usuariosService";
-
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { listarUsuariosApi } from "../services/usuariosApi";
+import { listarProductosApi } from "../services/productosApi";
 
 function PanelAdmin() {
+    const [usuarios, setUsuarios] = useState([]);
+    const [productos, setProductos] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
 
-    const usuarios = obtenerUsuarios();
+    useEffect(() => {
+        let activo = true;
 
-    const productos = obtenerProductos();
+        Promise.all([
+            listarUsuariosApi(),
+            listarProductosApi()
+        ])
+            .then(([listaUsuarios, listaProductos]) => {
+                if (activo) {
+                    setUsuarios(listaUsuarios);
+                    setProductos(listaProductos);
+                }
+            })
+            .catch((error) => {
+                if (activo) {
+                    setError(error.message);
+                }
+            })
+            .finally(() => {
+                if (activo) {
+                    setCargando(false);
+                }
+            });
 
-    const totalStock =
-        productos.reduce(
-            (total, producto) =>
-                total + producto.stock,
-            0
-        );
+        return () => {
+            activo = false;
+        };
+    }, []);
 
+    const totalStock = productos.reduce(
+        (total, producto) =>
+            total + Number(producto.stock || 0),
+        0
+    );
 
-    const totalClientes =
-        usuarios.filter(
-            (usuario) =>
-                usuario.rol === "CLIENTE"
-        ).length;
-
+    const totalClientes = usuarios.filter(
+        (usuario) => usuario.rol === "CLIENTE"
+    ).length;
 
     return (
-
         <section className="container py-5">
-
             <div className="mb-4">
-
                 <span className="badge bg-warning text-dark mb-2">
-
-                    ADMINISTRACION
-
+                    ADMINISTRACIÓN
                 </span>
 
-
                 <h2 className="fw-bold">
-
-                    Panel de Administracion
-
+                    Panel de Administración
                 </h2>
 
-
                 <p className="text-secondary">
-
                     Resumen general de Sonido Vivo.
-
                 </p>
-
             </div>
 
+            {error && (
+                <div className="alert alert-danger" role="alert">
+                    {error}
+                </div>
+            )}
 
-            <div className="row g-4">
+            {cargando ? (
+                <p role="status">
+                    Cargando datos desde MariaDB...
+                </p>
+            ) : (
+                <div className="row g-4">
+                    <div className="col-12 col-md-4">
+                        <div className="card h-100 p-4">
+                            <h3 className="h6 text-secondary">
+                                Productos cargados
+                            </h3>
 
-                <div className="col-12 col-md-4">
-
-                    <div className="card h-100 p-4">
-
-                        <h3 className="h6 text-secondary">
-
-                            Productos cargados
-
-                        </h3>
-
-
-                        <p className="display-5 fw-bold mb-0">
-
-                            {productos.length}
-
-                        </p>
-
+                            <p className="display-5 fw-bold mb-0">
+                                {productos.length}
+                            </p>
+                        </div>
                     </div>
 
-                </div>
+                    <div className="col-12 col-md-4">
+                        <div className="card h-100 p-4">
+                            <h3 className="h6 text-secondary">
+                                Stock registrado
+                            </h3>
 
-
-                <div className="col-12 col-md-4">
-
-                    <div className="card h-100 p-4">
-
-                        <h3 className="h6 text-secondary">
-
-                            Stock registrado
-
-                        </h3>
-
-
-                        <p className="display-5 fw-bold mb-0">
-
-                            {totalStock}
-
-                        </p>
-
+                            <p className="display-5 fw-bold mb-0">
+                                {totalStock}
+                            </p>
+                        </div>
                     </div>
 
-                </div>
+                    <div className="col-12 col-md-4">
+                        <div className="card h-100 p-4">
+                            <h3 className="h6 text-secondary">
+                                Clientes registrados
+                            </h3>
 
-
-                <div className="col-12 col-md-4">
-
-                    <div className="card h-100 p-4">
-
-                        <h3 className="h6 text-secondary">
-
-                            Clientes registrados
-
-                        </h3>
-
-
-                        <p className="display-5 fw-bold mb-0">
-
-                            {totalClientes}
-
-                        </p>
-
+                            <p className="display-5 fw-bold mb-0">
+                                {totalClientes}
+                            </p>
+                        </div>
                     </div>
-
                 </div>
-
-            </div>
-
+            )}
 
             <div className="card p-4 mt-4">
-
                 <h3 className="h5">
-
-                    Gestion administrativa
-
+                    Gestión administrativa
                 </h3>
 
-
                 <p className="text-secondary mb-0">
-
-                    Desde este panel puedes administrar los productos
-                    del catálogo y consultar o actualizar los pedidos.
-                    La información se almacena localmente como simulación
-                    de esta etapa del proyecto.
-
-
+                    Los indicadores de usuarios y productos se
+                    obtienen desde la API de Spring Boot.
+                    Los pedidos y reportes se integrarán
+                    próximamente con MariaDB.
                 </p>
-
             </div>
 
             <div className="d-flex flex-wrap gap-2 mt-4">
-
                 <Link
                     to="/admin/productos"
                     className="btn btn-dark"
                 >
-
                     Gestionar productos
-
                 </Link>
 
                 <Link
                     to="/admin/pedidos"
                     className="btn btn-outline-dark"
                 >
-
                     Gestionar pedidos
-
                 </Link>
 
                 <Link
@@ -183,14 +156,9 @@ function PanelAdmin() {
                 >
                     Reportes de ventas
                 </Link>
-                
             </div>
-
         </section>
-
     );
-
 }
-
 
 export default PanelAdmin;

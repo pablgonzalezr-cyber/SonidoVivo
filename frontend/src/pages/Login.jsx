@@ -1,127 +1,68 @@
 import { useState } from "react";
-import {
-    Link,
-    useNavigate
-} from "react-router-dom";
-
-import {
-    iniciarSesion
-} from "../services/authService";
-
+import { Link, useNavigate } from "react-router-dom";
+import { iniciarSesion } from "../services/authService";
 
 function Login({ onLogin }) {
-
-    const [correo, setCorreo] =
-        useState("");
-
-    const [contrasena, setContrasena] =
-        useState("");
-
-    const [error, setError] =
-        useState("");
-
+    const [correo, setCorreo] = useState("");
+    const [contrasena, setContrasena] = useState("");
+    const [error, setError] = useState("");
+    const [cargando, setCargando] = useState(false);
 
     const navigate = useNavigate();
 
-
-    function enviarLogin(evento) {
-
+    async function enviarLogin(evento) {
         evento.preventDefault();
+        setError("");
 
-
-        if (
-            correo.trim() === "" ||
-            contrasena === ""
-        ) {
-
-            setError(
-                "Debes completar correo y contrasena."
-            );
-
+        if (!correo.trim() || !contrasena) {
+            setError("Debes completar correo y contrasena.");
             return;
-
         }
 
+        setCargando(true);
 
-        const usuario =
-            iniciarSesion(
+        try {
+            const usuario = await iniciarSesion(
                 correo,
                 contrasena
             );
 
-
-        if (!usuario) {
-
-            setError(
-                "Correo o contrasena incorrectos."
-            );
-
-            return;
-
+            onLogin(usuario);
+            navigate("/");
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setCargando(false);
         }
-
-
-        setError("");
-
-
-        onLogin(usuario);
-
-
-        navigate("/");
-
     }
 
-
     return (
-
         <section className="container py-5">
-
             <div className="row justify-content-center">
-
                 <div className="col-12 col-md-8 col-lg-5">
-
-                    <h2 className="fw-bold">
-
-                        Iniciar sesion
-
-                    </h2>
-
+                    <h2 className="fw-bold">Iniciar sesion</h2>
 
                     <p className="text-secondary">
-
-                        Ingresa a tu cuenta
-                        de Sonido Vivo.
-
+                        Ingresa a tu cuenta de Sonido Vivo.
                     </p>
 
-
                     {error && (
-
-                        <div className="alert alert-danger">
-
+                        <div className="alert alert-danger" role="alert">
                             {error}
-
                         </div>
-
                     )}
-
 
                     <form
                         className="card p-4"
                         onSubmit={enviarLogin}
                     >
-
                         <div className="mb-3">
-
                             <label
                                 htmlFor="correoLogin"
                                 className="form-label"
                             >
-
                                 Correo electronico
-
                             </label>
-
 
                             <input
                                 id="correoLogin"
@@ -129,26 +70,19 @@ function Login({ onLogin }) {
                                 className="form-control"
                                 value={correo}
                                 onChange={(evento) =>
-                                    setCorreo(
-                                        evento.target.value
-                                    )
+                                    setCorreo(evento.target.value)
                                 }
+                                required
                             />
-
                         </div>
 
-
                         <div className="mb-3">
-
                             <label
                                 htmlFor="contrasenaLogin"
                                 className="form-label"
                             >
-
                                 Contrasena
-
                             </label>
-
 
                             <input
                                 id="contrasenaLogin"
@@ -156,49 +90,33 @@ function Login({ onLogin }) {
                                 className="form-control"
                                 value={contrasena}
                                 onChange={(evento) =>
-                                    setContrasena(
-                                        evento.target.value
-                                    )
+                                    setContrasena(evento.target.value)
                                 }
+                                required
                             />
-
                         </div>
-
 
                         <button
                             type="submit"
                             className="btn btn-dark w-100"
+                            disabled={cargando}
                         >
-
-                            Iniciar sesion
-
+                            {cargando
+                                ? "Iniciando sesion..."
+                                : "Iniciar sesion"}
                         </button>
 
-
                         <p className="text-center mt-3 mb-0">
-
-                            ¿No tienes cuenta?
-                            {" "}
-
+                            ¿No tienes cuenta?{" "}
                             <Link to="/registro">
-
                                 Registrate
-
                             </Link>
-
                         </p>
-
                     </form>
-
                 </div>
-
             </div>
-
         </section>
-
     );
-
 }
-
 
 export default Login;

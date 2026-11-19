@@ -1,5 +1,4 @@
-
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import {
     validarNombre,
@@ -10,48 +9,38 @@ import {
 } from "../utils/validaciones";
 
 describe("Validaciones de formularios", () => {
-
-    it("valida correctamente los nombres", () => {
-
+    it("valida nombres", () => {
         expect(validarNombre("Pablo")).toBe(true);
         expect(validarNombre("AB")).toBe(false);
-
     });
 
-    it("valida los correos electronicos", () => {
-
+    it("valida correos electronicos", () => {
         expect(validarCorreo("cliente@gmail.com")).toBe(true);
-        expect(validarCorreo("correoincorrecto")).toBe(false);
-
+        expect(validarCorreo("correo-invalido")).toBe(false);
     });
 
-    it("valida la longitud de los mensajes", () => {
-
+    it("valida mensajes", () => {
         expect(
             validarMensaje("Quiero consultar por una guitarra")
         ).toBe(true);
 
         expect(validarMensaje("Hola")).toBe(false);
-
     });
 
-    it("valida las contrasenas", () => {
-
-        expect(validarContrasena("123456")).toBe(true);
-        expect(validarContrasena("123")).toBe(false);
-
+    it("exige contrasenas entre 8 y 72 caracteres", () => {
+        expect(validarContrasena("1234567")).toBe(false);
+        expect(validarContrasena("12345678")).toBe(true);
+        expect(validarContrasena("a".repeat(72))).toBe(true);
+        expect(validarContrasena("a".repeat(73))).toBe(false);
     });
 
     it("comprueba la confirmacion de contrasena", () => {
-
         expect(
-            validarConfirmacionContrasena("123456", "123456")
+            validarConfirmacionContrasena("clave1234", "clave1234")
         ).toBe(true);
 
         expect(
-            validarConfirmacionContrasena("123456", "654321")
+            validarConfirmacionContrasena("clave1234", "otraClave")
         ).toBe(false);
-
     });
-
 });

@@ -7,71 +7,43 @@ import {
     validarConfirmacionContrasena
 } from "../utils/validaciones";
 
-import {
-    correoRegistrado,
-    registrarUsuario
-} from "../services/usuariosService";
-
+import { registrarCuenta } from "../services/authService";
 
 function Registro() {
-
     const [nombre, setNombre] = useState("");
-
     const [correo, setCorreo] = useState("");
-
     const [contrasena, setContrasena] = useState("");
-
-    const [
-        confirmarContrasena,
-        setConfirmarContrasena
-    ] = useState("");
-
+    const [confirmarContrasena, setConfirmarContrasena] =
+        useState("");
 
     const [error, setError] = useState("");
+    const [registrado, setRegistrado] = useState(false);
+    const [cargando, setCargando] = useState(false);
 
-    const [registrado, setRegistrado] =
-        useState(false);
-
-
-    function enviarRegistro(evento) {
-
+    async function enviarRegistro(evento) {
         evento.preventDefault();
 
+        setError("");
         setRegistrado(false);
 
-
         if (!validarNombre(nombre)) {
-
             setError(
                 "El nombre debe tener al menos 3 caracteres."
             );
-
             return;
-
         }
-
 
         if (!validarCorreo(correo)) {
-
-            setError(
-                "Ingresa un correo valido."
-            );
-
+            setError("Ingresa un correo valido.");
             return;
-
         }
-
 
         if (!validarContrasena(contrasena)) {
-
             setError(
-                "La contrasena debe tener al menos 6 caracteres."
+                "La contrasena debe tener al menos 8 caracteres."
             );
-
             return;
-
         }
-
 
         if (
             !validarConfirmacionContrasena(
@@ -79,115 +51,65 @@ function Registro() {
                 confirmarContrasena
             )
         ) {
-
-            setError(
-                "Las contrasenas no coinciden."
-            );
-
+            setError("Las contrasenas no coinciden.");
             return;
-
         }
 
+        setCargando(true);
 
-        if (correoRegistrado(correo)) {
+        try {
+            await registrarCuenta({
+                nombre: nombre.trim(),
+                correo: correo.trim().toLowerCase(),
+                contrasena
+            });
 
-            setError(
-                "El correo ya se encuentra registrado."
-            );
-
-            return;
-
+            setRegistrado(true);
+            setNombre("");
+            setCorreo("");
+            setContrasena("");
+            setConfirmarContrasena("");
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setCargando(false);
         }
-
-
-        registrarUsuario({
-
-            nombre: nombre,
-
-            correo: correo,
-
-            contrasena: contrasena
-
-        });
-
-
-        setError("");
-
-        setRegistrado(true);
-
-
-        setNombre("");
-
-        setCorreo("");
-
-        setContrasena("");
-
-        setConfirmarContrasena("");
-
     }
 
-
     return (
-
         <section className="container py-5">
-
             <div className="row justify-content-center">
-
                 <div className="col-12 col-md-8 col-lg-6">
-
-                    <h2 className="fw-bold">
-
-                        Crear cuenta
-
-                    </h2>
-
+                    <h2 className="fw-bold">Crear cuenta</h2>
 
                     <p className="text-secondary">
-
-                        Registrate como cliente
-                        de Sonido Vivo.
-
+                        Registrate como cliente de Sonido Vivo.
                     </p>
 
-
                     {error && (
-
-                        <div className="alert alert-danger">
-
+                        <div className="alert alert-danger" role="alert">
                             {error}
-
                         </div>
-
                     )}
-
 
                     {registrado && (
-
-                        <div className="alert alert-success">
-
+                        <div className="alert alert-success" role="status">
                             Usuario registrado correctamente.
-
+                            Ya puedes iniciar sesion.
                         </div>
-
                     )}
-
 
                     <form
                         className="card p-4"
                         onSubmit={enviarRegistro}
                     >
-
                         <div className="mb-3">
-
                             <label
                                 htmlFor="nombreRegistro"
                                 className="form-label"
                             >
-
                                 Nombre
-
                             </label>
-
 
                             <input
                                 id="nombreRegistro"
@@ -195,26 +117,19 @@ function Registro() {
                                 className="form-control"
                                 value={nombre}
                                 onChange={(evento) =>
-                                    setNombre(
-                                        evento.target.value
-                                    )
+                                    setNombre(evento.target.value)
                                 }
+                                required
                             />
-
                         </div>
 
-
                         <div className="mb-3">
-
                             <label
                                 htmlFor="correoRegistro"
                                 className="form-label"
                             >
-
                                 Correo electronico
-
                             </label>
-
 
                             <input
                                 id="correoRegistro"
@@ -222,26 +137,19 @@ function Registro() {
                                 className="form-control"
                                 value={correo}
                                 onChange={(evento) =>
-                                    setCorreo(
-                                        evento.target.value
-                                    )
+                                    setCorreo(evento.target.value)
                                 }
+                                required
                             />
-
                         </div>
 
-
                         <div className="mb-3">
-
                             <label
                                 htmlFor="contrasenaRegistro"
                                 className="form-label"
                             >
-
                                 Contrasena
-
                             </label>
-
 
                             <input
                                 id="contrasenaRegistro"
@@ -249,32 +157,23 @@ function Registro() {
                                 className="form-control"
                                 value={contrasena}
                                 onChange={(evento) =>
-                                    setContrasena(
-                                        evento.target.value
-                                    )
+                                    setContrasena(evento.target.value)
                                 }
+                                required
                             />
 
                             <small className="text-secondary">
-
-                                Minimo 6 caracteres.
-
+                                Minimo 8 caracteres.
                             </small>
-
                         </div>
 
-
                         <div className="mb-3">
-
                             <label
                                 htmlFor="confirmarContrasena"
                                 className="form-label"
                             >
-
                                 Confirmar contrasena
-
                             </label>
-
 
                             <input
                                 id="confirmarContrasena"
@@ -286,31 +185,24 @@ function Registro() {
                                         evento.target.value
                                     )
                                 }
+                                required
                             />
-
                         </div>
-
 
                         <button
                             type="submit"
                             className="btn btn-dark"
+                            disabled={cargando}
                         >
-
-                            Crear cuenta
-
+                            {cargando
+                                ? "Registrando..."
+                                : "Crear cuenta"}
                         </button>
-
                     </form>
-
                 </div>
-
             </div>
-
         </section>
-
     );
-
 }
-
 
 export default Registro;
