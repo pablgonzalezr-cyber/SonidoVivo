@@ -155,8 +155,19 @@ public class SeguridadConfig {
                     "/api/productos/*").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE,
                     "/api/productos/*").hasRole("ADMIN")
+                
                 .requestMatchers("/api/productos", "/api/productos/**").denyAll()
+                .requestMatchers(HttpMethod.POST, "/api/pedidos")
+                    .hasRole("CLIENTE")
+                .requestMatchers(HttpMethod.GET, "/api/pedidos/mis")
+                    .hasRole("CLIENTE")
+                .requestMatchers(HttpMethod.GET, "/api/pedidos")
+                    .hasAnyRole("ADMIN", "VENDEDOR")
+                .requestMatchers(HttpMethod.PUT, "/api/pedidos/*/estado")
+                    .hasAnyRole("ADMIN", "VENDEDOR")
+                .requestMatchers("/api/pedidos", "/api/pedidos/**").denyAll()
                 .anyRequest().authenticated()
+
             )
             .oauth2ResourceServer(oauth ->
                 oauth.jwt(jwt ->

@@ -1,128 +1,109 @@
+
 import {
+    afterEach,
     beforeEach,
     describe,
+    expect,
     it,
-    expect
+    vi
 } from "vitest";
 
-import {
-    obtenerProductoPorCodigo
-} from "../services/productosService";
+import { obtenerToken } from "../services/authService";
+import { crearPedidoApi } from "../services/pedidosApi";
 
-import {
-    crearPedido,
-    obtenerPedidos
-} from "../services/pedidosService";
+vi.mock("../services/authService", () => ({
+    obtenerToken: vi.fn()
+}));
 
-const cliente = {
-    id: 200,
-    nombre: "Cliente Prueba",
-    correo: "cliente@sonidovivo.cl",
-    rol: "CLIENTE"
-};
+const productos = [{
+    codigo: "GA001",
+    cantidad: 2,
+    precioEsperado: 129990
+}];
 
 beforeEach(() => {
-    localStorage.clear();
+    vi.resetAllMocks();
+
+    vi.mocked(obtenerToken).mockReturnValue("jwt-cliente");
 });
 
-describe("Pedidos y tipos de entrega", () => {
+afterEach(() => {
+    vi.unstubAllGlobals();
+});
 
-    it("permite comprar con retiro en tienda", () => {
-
-        const producto = obtenerProductoPorCodigo("GE001");
-
-        const pedido = crearPedido({
-            usuario: cliente,
-            productos: [{ ...producto, cantidad: 1 }],
-            tipoEntrega: "RETIRO"
-        });
-
-        expect(pedido.tipoEntrega).toBe("RETIRO");
-        expect(pedido.direccion).toBe("Retiro en tienda");
-        expect(obtenerPedidos()).toHaveLength(1);
-
+function simularCompra() {
+    const solicitud = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 201,
+        json: async () => ({
+            id: 31,
+            estado: "PENDIENTE"
+        })
     });
 
-    it("permite comprar con despacho a domicilio", () => {
+    vi.stubGlobal("fetch", solicitud);
+    return solicitud;
+}
 
-        const producto = obtenerProductoPorCodigo("GE001");
+describe("Tipos de entrega enviados a Spring Boot", () => {
+    it("envia retiro en tienda con productos y precios esperados", async () => {
+        const solicitud = simularCompra();
 
-        const pedido = crearPedido({
-            usuario: cliente,
-            productos: [{ ...producto, cantidad: 1 }],
-            tipoEntrega: "DESPACHO",
-            direccion: "Avenida Libertad 1234"
+        await crearPedidoApi({
+            tipoEntrega: "RETIRO",
+            direccion: "",
+            productos
         });
 
-        expect(pedido.tipoEntrega).toBe("DESPACHO");
-        expect(pedido.direccion).toBe(
-            "Avenida Libertad 1234"
+        const opciones = solicitud.mock.calls[0][1];
+
+        expect(JSON.parse(opciones.body)).toEqual({
+            tipoEntrega: "RETIRO",
+            direccion: "",
+            productos
+        });
+
+        expect(opciones.headers.Authorization).toBe(
+            "Bearer jwt-cliente"
         );
-
     });
 
-    it("rechaza despachos sin dirección válida", () => {
+    it("envia despacho con direccion", async () => {
+        const solicitud = simularCompra();
 
-        const producto = obtenerProductoPorCodigo("GE001");
-
-        expect(() => {
-
-            crearPedido({
-                usuario: cliente,
-                productos: [{ ...producto, cantidad: 1 }],
-                tipoEntrega: "DESPACHO",
-                direccion: ""
-            });
-
-        }).toThrow(/direcci[oó]n/i);
-
-        expect(obtenerPedidos()).toHaveLength(0);
-
-    });
-
-    it("rechaza pedidos con precios desactualizados", () => {
-
-        const producto = obtenerProductoPorCodigo("GE001");
-
-        expect(() => {
-
-            crearPedido({
-                usuario: cliente,
-                productos: [{
-                    ...producto,
-                    precio: producto.precio + 1000,
-                    cantidad: 1
-                }],
-                tipoEntrega: "RETIRO"
-            });
-
-        }).toThrow(/precio/i);
-
-        expect(obtenerPedidos()).toHaveLength(0);
+        await crearPedidoApi({
+            tipoEntrega: "DESPACHO",
+            direccion: "Avenida Libertad 1234",
+            productos
+        });
 
         expect(
-            obtenerProductoPorCodigo("GE001").stock
-        ).toBe(producto.stock);
-
+            JSON.parse(solicitud.mock.calls[0][1].body)
+        ).toEqual({
+            tipoEntrega: "DESPACHO",
+            direccion: "Avenida Libertad 1234",
+            productos
+        });
     });
 
-    it("impide que un vendedor realice compras", () => {
+    it("informa rechazo por cambio de precio sin simular compra local", async () => {
+        vi.stubGlobal(
+            "fetch",
+            vi.fn().mockResolvedValue({
+                ok: false,
+                status: 409,
+                json: async () => ({
+                    detail: "El precio de la guitarra cambio."
+                })
+            })
+        );
 
-        const producto = obtenerProductoPorCodigo("GE001");
-
-        expect(() => {
-
-            crearPedido({
-                usuario: {
-                    ...cliente,
-                    rol: "VENDEDOR"
-                },
-                productos: [{ ...producto, cantidad: 1 }],
-                tipoEntrega: "RETIRO"
-            });
-
-        }).toThrow(/cliente/i);
-
+        await expect(
+            crearPedidoApi({
+                tipoEntrega: "RETIRO",
+                direccion: "",
+                productos
+            })
+        ).rejects.toThrow(/precio/i);
     });
-
 });

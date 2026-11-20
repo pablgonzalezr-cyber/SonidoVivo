@@ -1,83 +1,29 @@
-
-import { obtenerPedidos } from "./pedidosService";
-
 function obtenerFechaPedido(pedido) {
-
-    if (pedido.fechaISO) {
-
-        const fecha = new Date(pedido.fechaISO);
-
-        if (!Number.isNaN(fecha.getTime())) {
-            return fecha;
-        }
-
+    if (!pedido.fechaISO) {
+        return null;
     }
 
-    if (typeof pedido.fecha === "string") {
+    const fecha = new Date(pedido.fechaISO);
 
-        const partes = pedido.fecha.match(
-            /^\s*(\d{1,2})[/-](\d{1,2})[/-](\d{4})/
-        );
-
-        if (partes) {
-
-            const dia = Number(partes[1]);
-            const mes = Number(partes[2]);
-            const anio = Number(partes[3]);
-
-            const fecha = new Date(anio, mes - 1, dia);
-
-            if (
-                fecha.getFullYear() === anio &&
-                fecha.getMonth() === mes - 1 &&
-                fecha.getDate() === dia
-            ) {
-                return fecha;
-            }
-
-        }
-
-    }
-
-    const identificador = Number(pedido.id);
-
-    if (
-        Number.isFinite(identificador) &&
-        identificador > 946684800000
-    ) {
-
-        const fecha = new Date(identificador);
-
-        if (!Number.isNaN(fecha.getTime())) {
-            return fecha;
-        }
-
-    }
-
-    return null;
+    return Number.isNaN(fecha.getTime())
+        ? null
+        : fecha;
 }
 
-function convertirFecha(fecha) {
-
+function convertirFechaLocal(fecha) {
     const anio = fecha.getFullYear();
-
-    const mes = String(
-        fecha.getMonth() + 1
-    ).padStart(2, "0");
-
-    const dia = String(
-        fecha.getDate()
-    ).padStart(2, "0");
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
 
     return `${anio}-${mes}-${dia}`;
 }
 
-function generarReporteVentas(desde = "", hasta = "") {
-
-    const pedidos = obtenerPedidos();
-
+function generarReporteVentas(
+    pedidos = [],
+    desde = "",
+    hasta = ""
+) {
     const pedidosFiltrados = pedidos.filter((pedido) => {
-
         if (!desde && !hasta) {
             return true;
         }
@@ -88,13 +34,12 @@ function generarReporteVentas(desde = "", hasta = "") {
             return false;
         }
 
-        const fechaPedido = convertirFecha(fecha);
+        const fechaPedido = convertirFechaLocal(fecha);
 
         return (
             (!desde || fechaPedido >= desde) &&
             (!hasta || fechaPedido <= hasta)
         );
-
     });
 
     const montoTotal = pedidosFiltrados.reduce(
@@ -104,38 +49,29 @@ function generarReporteVentas(desde = "", hasta = "") {
     );
 
     const unidades = pedidosFiltrados.reduce(
-        (total, pedido) => {
-
-            if (!Array.isArray(pedido.productos)) {
-                return total;
-            }
-
-            const cantidad = pedido.productos.reduce(
-                (subtotal, producto) =>
-                    subtotal + (Number(producto.cantidad) || 0),
-                0
-            );
-
-            return total + cantidad;
-
-        },
+        (total, pedido) =>
+            total + (Array.isArray(pedido.productos)
+                ? pedido.productos.reduce(
+                    (subtotal, producto) =>
+                        subtotal + (Number(producto.cantidad) || 0),
+                    0
+                )
+                : 0),
         0
     );
 
     const porEstado = {};
 
     for (const pedido of pedidosFiltrados) {
-
-        const estado = pedido.estado || "SIN ESTADO";
+        const estado = pedido.estado || "SIN_ESTADO";
 
         porEstado[estado] =
             (porEstado[estado] || 0) + 1;
-
     }
 
     const porEntrega = {
         DESPACHO: pedidosFiltrados.filter(
-            (pedido) => pedido.tipoEntrega !== "RETIRO"
+            (pedido) => pedido.tipoEntrega === "DESPACHO"
         ).length,
 
         RETIRO: pedidosFiltrados.filter(
@@ -144,17 +80,9 @@ function generarReporteVentas(desde = "", hasta = "") {
     };
 
     const pedidosOrdenados = [...pedidosFiltrados].sort(
-        (primero, segundo) => {
-
-            const fechaA = obtenerFechaPedido(primero);
-            const fechaB = obtenerFechaPedido(segundo);
-
-            return (
-                (fechaB?.getTime() || 0) -
-                (fechaA?.getTime() || 0)
-            );
-
-        }
+        (primero, segundo) =>
+            (obtenerFechaPedido(segundo)?.getTime() || 0) -
+            (obtenerFechaPedido(primero)?.getTime() || 0)
     );
 
     return {
@@ -170,7 +98,6 @@ function generarReporteVentas(desde = "", hasta = "") {
         porEntrega,
         pedidos: pedidosOrdenados
     };
-
 }
 
 export {
