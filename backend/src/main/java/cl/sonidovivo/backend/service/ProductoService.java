@@ -1,3 +1,4 @@
+
 package cl.sonidovivo.backend.service;
 
 import cl.sonidovivo.backend.dto.ProductoRequest;
@@ -37,7 +38,9 @@ public class ProductoService {
 
     @Transactional
     public Producto crear(ProductoRequest datos) {
-        String codigo = datos.codigo().trim().toUpperCase(Locale.ROOT);
+        String codigo = datos.codigo()
+            .trim()
+            .toUpperCase(Locale.ROOT);
 
         if (repository.existsByCodigoIgnoreCase(codigo)) {
             throw new ResponseStatusException(
@@ -56,11 +59,14 @@ public class ProductoService {
             datos.precio(),
             limpiarOpcional(datos.descripcion())
         );
-        nuevo.setImagen(limpiarOpcional(datos.imagen()));
+
+        nuevo.setImagen(
+            limpiarOpcional(datos.imagen())
+        );
 
         try {
             return repository.saveAndFlush(nuevo);
-        } catch (DataIntegrityViolationException ex) {
+        } catch (DataIntegrityViolationException error) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT,
                 "No se pudo crear el producto: codigo duplicado"
@@ -69,10 +75,17 @@ public class ProductoService {
     }
 
     @Transactional
-    public Producto actualizar(String codigo, ProductoRequest datos) {
+    public Producto actualizar(
+            String codigo,
+            ProductoRequest datos) {
+
         Producto producto = buscarPorCodigo(codigo);
 
-        if (!producto.getCodigo().equalsIgnoreCase(datos.codigo().trim())) {
+        if (
+            !producto.getCodigo().equalsIgnoreCase(
+                datos.codigo().trim()
+            )
+        ) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
                 "No esta permitido cambiar el codigo del producto"
@@ -85,8 +98,31 @@ public class ProductoService {
         producto.setModelo(datos.modelo().trim());
         producto.setStock(datos.stock());
         producto.setPrecio(datos.precio());
-        producto.setDescripcion(limpiarOpcional(datos.descripcion()));
-        producto.setImagen(limpiarOpcional(datos.imagen()));
+        producto.setDescripcion(
+            limpiarOpcional(datos.descripcion())
+        );
+        producto.setImagen(
+            limpiarOpcional(datos.imagen())
+        );
+
+        return repository.saveAndFlush(producto);
+    }
+
+    @Transactional
+    public Producto actualizarStock(
+            String codigo,
+            Integer nuevoStock) {
+
+        if (nuevoStock == null || nuevoStock < 0) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "El stock debe ser un entero mayor o igual a cero"
+            );
+        }
+
+        Producto producto = buscarPorCodigo(codigo);
+
+        producto.setStock(nuevoStock);
 
         return repository.saveAndFlush(producto);
     }
@@ -101,4 +137,3 @@ public class ProductoService {
         return texto == null ? "" : texto.trim();
     }
 }
-

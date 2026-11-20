@@ -1,6 +1,7 @@
 package cl.sonidovivo.backend.controller;
 
 import cl.sonidovivo.backend.dto.ProductoRequest;
+import cl.sonidovivo.backend.dto.StockRequest;
 import cl.sonidovivo.backend.model.Producto;
 import cl.sonidovivo.backend.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,8 +9,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,25 +41,51 @@ public class ProductoController {
         return service.buscarPorCodigo(codigo);
     }
 
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Producto> crear(
             @Valid @RequestBody ProductoRequest datos) {
-        return ResponseEntity.status(HttpStatus.CREATED)
+
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
             .body(service.crear(datos));
     }
 
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{codigo}")
     public Producto actualizar(
             @PathVariable String codigo,
             @Valid @RequestBody ProductoRequest datos) {
+
         return service.actualizar(codigo, datos);
     }
 
-    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
+    @Operation(
+        summary = "Actualizar existencias de un producto",
+        description = "Permitido para ADMIN y VENDEDOR",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @PreAuthorize("hasAnyRole('ADMIN', 'VENDEDOR')")
+    @PutMapping("/{codigo}/stock")
+    public Producto actualizarStock(
+            @PathVariable String codigo,
+            @Valid @RequestBody StockRequest datos) {
+
+        return service.actualizarStock(
+            codigo,
+            datos.stock()
+        );
+    }
+
+    @Operation(
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

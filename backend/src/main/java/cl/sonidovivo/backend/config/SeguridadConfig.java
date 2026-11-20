@@ -142,10 +142,15 @@ public class SeguridadConfig {
                     .hasRole("ADMIN")
                 .requestMatchers("/api/vendedor/**")
                     .hasAnyRole("ADMIN", "VENDEDOR")
+                
                 .requestMatchers(HttpMethod.GET,
                     "/api/productos", "/api/productos/**").permitAll()
+                .requestMatchers(HttpMethod.PUT,
+                    "/api/productos/*/stock")
+                    .hasAnyRole("ADMIN", "VENDEDOR")
                 .requestMatchers(HttpMethod.POST,
                     "/api/productos").hasRole("ADMIN")
+
                 .requestMatchers(HttpMethod.PUT,
                     "/api/productos/*").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE,
