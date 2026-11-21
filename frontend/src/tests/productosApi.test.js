@@ -11,6 +11,7 @@ import { obtenerToken } from "../services/authService";
 
 import {
     listarProductosApi,
+    listarCategoriasApi,
     obtenerProductoApi,
     crearProductoApi,
     actualizarProductoApi,
@@ -174,6 +175,29 @@ describe("API REST de productos", () => {
         await expect(
             obtenerProductoApi("XX999")
         ).rejects.toThrow(/producto solicitado no existe/i);
+    });
+
+    it("envia filtros y ordenamiento como parametros HTTP", async () => {
+        const solicitud = simularRespuesta([producto]);
+        await listarProductosApi({ filtros: {
+            texto: "Yamaha", categoria: "Guitarras", precioMin: "10000",
+            precioMax: "300000", disponible: true, orden: "precio_asc"
+        } });
+        const url = new URL(solicitud.mock.calls[0][0]);
+        expect(url.pathname).toBe("/api/productos");
+        expect(url.searchParams.get("texto")).toBe("Yamaha");
+        expect(url.searchParams.get("categoria")).toBe("Guitarras");
+        expect(url.searchParams.get("precioMin")).toBe("10000");
+        expect(url.searchParams.get("precioMax")).toBe("300000");
+        expect(url.searchParams.get("disponible")).toBe("true");
+        expect(url.searchParams.get("orden")).toBe("precio_asc");
+    });
+
+    it("lista las categorias desde Spring Boot", async () => {
+        const solicitud = simularRespuesta(["Guitarras", "Bajos"]);
+        const resultado = await listarCategoriasApi();
+        expect(resultado).toEqual(["Guitarras", "Bajos"]);
+        expect(solicitud.mock.calls[0][0]).toContain("/api/productos/categorias");
     });
 
     it("informa errores del servidor", async () => {

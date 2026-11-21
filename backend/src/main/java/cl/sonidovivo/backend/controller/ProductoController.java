@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,8 +33,19 @@ public class ProductoController {
     }
 
     @GetMapping
-    public List<Producto> listar() {
-        return service.listar();
+    public List<Producto> listar(
+            @RequestParam(required = false) String texto,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) Integer precioMin,
+            @RequestParam(required = false) Integer precioMax,
+            @RequestParam(required = false) Boolean disponible,
+            @RequestParam(defaultValue = "codigo") String orden) {
+        return service.buscar(texto, categoria, precioMin, precioMax, disponible, orden);
+    }
+
+    @GetMapping("/categorias")
+    public List<String> categorias() {
+        return service.listarCategorias();
     }
 
     @GetMapping("/{codigo}")

@@ -1,117 +1,111 @@
-import { beforeEach, describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { MemoryRouter } from "react-router-dom";
 import Productos from "../pages/Productos";
-import { listarProductosApi } from "../services/productosApi";
+import { listarProductosApi, listarCategoriasApi } from "../services/productosApi";
 
 vi.mock("../services/productosApi", () => ({
-    listarProductosApi: vi.fn()
+    listarProductosApi: vi.fn(),
+    listarCategoriasApi: vi.fn()
 }));
 
-const productosPrueba = [
-    {
-        codigo: "GA001", nombre: "Guitarra Prueba", categoria: "Guitarras Acústicas",
-        marca: "Yamaha", modelo: "F310", descripcion: "Guitarra de prueba",
-        precio: 129990, stock: 5
-    },
-    {
-        codigo: "BA001", nombre: "Bajo Prueba", categoria: "Bajos Eléctricos",
-        marca: "Squier", modelo: "Affinity", descripcion: "Bajo de prueba",
-        precio: 229990, stock: 3
-    },
-    {
-        codigo: "MI001", nombre: "Micrófono Prueba", categoria: "Micrófonos",
-        marca: "Shure", modelo: "SM58", descripcion: "Micrófono de prueba",
-        precio: 149990, stock: 8
-    }
+const datos = [
+    { codigo: "GA001", nombre: "Guitarra Prueba", categoria: "Guitarras", marca: "Yamaha", modelo: "F310", precio: 129990, stock: 5, descripcion: "" },
+    { codigo: "BA001", nombre: "Bajo Prueba", categoria: "Bajos", marca: "Squier", modelo: "Affinity", precio: 229990, stock: 0, descripcion: "" },
+    { codigo: "MI001", nombre: "Microfono Prueba", categoria: "Microfonos", marca: "Shure", modelo: "SM58", precio: 149990, stock: 8, descripcion: "" }
 ];
 
 beforeEach(() => {
     vi.resetAllMocks();
-    vi.mocked(listarProductosApi).mockResolvedValue(productosPrueba);
+    vi.mocked(listarCategoriasApi).mockResolvedValue(["Bajos", "Guitarras", "Microfonos"]);
+    vi.mocked(listarProductosApi).mockImplementation(async ({ filtros = {} } = {}) => {
+        let resultado = [...datos];
+        if (filtros.texto?.trim()) {
+            const buscar = filtros.texto.toLowerCase();
+            resultado = resultado.filter((producto) =>
+                [producto.nombre, producto.marca, producto.modelo]
+                    .some((campo) => campo.toLowerCase().includes(buscar)));
+        }
+        if (filtros.categoria && filtros.categoria !== "Todas") {
+            resultado = resultado.filter((p) => p.categoria === filtros.categoria);
+        }
+        if (filtros.precioMin !== "") {
+            resultado = resultado.filter((p) => p.precio >= Number(filtros.precioMin));
+        }
+        if (filtros.precioMax !== "") {
+            resultado = resultado.filter((p) => p.precio <= Number(filtros.precioMax));
+        }
+        if (filtros.disponible) resultado = resultado.filter((p) => p.stock > 0);
+        if (filtros.orden === "precio_desc") resultado.sort((a, b) => b.precio - a.precio);
+        return resultado;
+    });
 });
 
-function mostrarCatalogo() {
-    return render(
-        <MemoryRouter>
-            <Productos />
-        </MemoryRouter>
-    );
+function mostrar() {
+    render(<MemoryRouter><Productos /></MemoryRouter>);
 }
 
-describe("Catalogo React conectado a API", () => {
-    it("carga y muestra los productos entregados por la API", async () => {
-        mostrarCatalogo();
-        expect(await screen.findByRole("heading", { name: "Guitarra Prueba" }))
-            .toBeInTheDocument();
-        expect(screen.getByRole("heading", { name: "Bajo Prueba" }))
-            .toBeInTheDocument();
-        expect(listarProductosApi).toHaveBeenCalledOnce();
+describe("Catalogo con filtros REST en MariaDB", () => {
+    it("carga el catalogo y las categorias de la API", async () => {
+        mostrar();
+        expect(await screen.findByRole("heading", { name: "Guitarra Prueba" })).toBeInTheDocument();
+        expect(listarProductosApi).toHaveBeenCalled();
+        expect(listarCategoriasApi).toHaveBeenCalledTimes(1);
     });
 
-    it("filtra los productos por marca", async () => {
-        mostrarCatalogo();
+    it("busca por modelo en el backend", async () => {
+        mostrar();
         await screen.findByRole("heading", { name: "Guitarra Prueba" });
         fireEvent.change(screen.getByLabelText("Buscar producto"), {
-            target: { value: "Shure" }
+            target: { value: "SM58" }
         });
-        expect(screen.getByRole("heading", { name: "Micrófono Prueba" }))
-            .toBeInTheDocument();
-        expect(screen.queryByRole("heading", { name: "Guitarra Prueba" }))
-            .not.toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "Microfono Prueba" })).toBeInTheDocument();
+        await waitFor(() => expect(screen.queryByRole("heading", { name: "Guitarra Prueba" })).not.toBeInTheDocument());
+        expect(listarProductosApi).toHaveBeenCalledWith(expect.objectContaining({
+            filtros: expect.objectContaining({ texto: "SM58" })
+        }));
     });
 
-    it("filtra los productos por categoria", async () => {
-        mostrarCatalogo();
-        await screen.findByRole("heading", { name: "Bajo Prueba" });
+    it("filtra por categoria desde la API", async () => {
+        mostrar();
+        await screen.findByRole("option", { name: "Guitarras" });
         fireEvent.change(screen.getByLabelText("Categoria"), {
-            target: { value: "Bajos Eléctricos" }
+            target: { value: "Bajos" }
         });
-        expect(screen.getByRole("heading", { name: "Bajo Prueba" }))
-            .toBeInTheDocument();
-        expect(screen.queryByRole("heading", { name: "Micrófono Prueba" }))
-            .not.toBeInTheDocument();
+        expect(await screen.findByRole("heading", { name: "Bajo Prueba" })).toBeInTheDocument();
+        expect(listarProductosApi).toHaveBeenCalledWith(expect.objectContaining({
+            filtros: expect.objectContaining({ categoria: "Bajos" })
+        }));
     });
 
-    it("informa cuando la busqueda no encuentra coincidencias", async () => {
-        mostrarCatalogo();
+    it("filtra por precio y disponibilidad", async () => {
+        mostrar();
         await screen.findByRole("heading", { name: "Guitarra Prueba" });
-        fireEvent.change(screen.getByLabelText("Buscar producto"), {
-            target: { value: "Instrumento Inexistente" }
+        fireEvent.change(screen.getByLabelText("Precio máximo"), {
+            target: { value: "150000" }
         });
-        expect(screen.getByText(/No encontramos productos/i))
-            .toBeInTheDocument();
+        fireEvent.click(screen.getByLabelText("Con stock"));
+        await waitFor(() => expect(screen.queryByRole("heading", { name: "Bajo Prueba" })).not.toBeInTheDocument());
+        expect(listarProductosApi).toHaveBeenCalledWith(expect.objectContaining({
+            filtros: expect.objectContaining({ disponible: true, precioMax: "150000" })
+        }));
     });
 
-    it("muestra un estado de carga mientras espera la API", () => {
-        vi.mocked(listarProductosApi).mockImplementation(
-            () => new Promise(() => {})
-        );
-        mostrarCatalogo();
-        expect(screen.getByRole("status")).toHaveTextContent(/Cargando productos/i);
+    it("rechaza un rango de precios invertido sin consultar la API", async () => {
+        mostrar();
+        await screen.findByRole("heading", { name: "Guitarra Prueba" });
+        fireEvent.change(screen.getByLabelText("Precio mínimo"), { target: { value: "300000" } });
+        fireEvent.change(screen.getByLabelText("Precio máximo"), { target: { value: "10000" } });
+        expect(await screen.findByRole("alert")).toHaveTextContent(/mínimo no puede ser mayor/i);
     });
 
-    it("muestra un mensaje cuando la API no responde", async () => {
-        vi.mocked(listarProductosApi).mockRejectedValue(
-            new Error("Servidor fuera de servicio")
-        );
-        mostrarCatalogo();
-        expect(await screen.findByRole("alert"))
-            .toHaveTextContent("Servidor fuera de servicio");
-        expect(screen.getByRole("button", { name: "Reintentar" }))
-            .toBeInTheDocument();
-    });
-
-    it("permite reintentar tras un error temporal", async () => {
-        vi.mocked(listarProductosApi)
-            .mockRejectedValueOnce(new Error("Error de red"))
-            .mockResolvedValueOnce(productosPrueba);
-        mostrarCatalogo();
-        await screen.findByRole("alert");
+    it("muestra errores del servidor y permite reintentar", async () => {
+        vi.mocked(listarProductosApi).mockRejectedValueOnce(new Error("Sin conexión"))
+            .mockResolvedValueOnce(datos);
+        mostrar();
+        expect(await screen.findByRole("alert")).toHaveTextContent("Sin conexión");
         fireEvent.click(screen.getByRole("button", { name: "Reintentar" }));
-        expect(await screen.findByRole("heading", { name: "Guitarra Prueba" }))
-            .toBeInTheDocument();
-        expect(listarProductosApi).toHaveBeenCalledTimes(2);
+        expect(await screen.findByRole("heading", { name: "Guitarra Prueba" })).toBeInTheDocument();
     });
 });

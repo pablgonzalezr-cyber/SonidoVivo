@@ -96,10 +96,26 @@ async function solicitarProducto(ruta, opciones = {}) {
 }
 
 async function listarProductosApi(opciones = {}) {
-    const productos = await solicitarProducto(
-        "/api/productos",
-        opciones
-    );
+    const filtros = opciones.filtros || {};
+    const parametros = new URLSearchParams();
+
+    if (filtros.texto?.trim()) parametros.set("texto", filtros.texto.trim());
+    if (filtros.categoria && filtros.categoria !== "Todas") {
+        parametros.set("categoria", filtros.categoria);
+    }
+    if (filtros.precioMin !== "" && filtros.precioMin != null) {
+        parametros.set("precioMin", String(filtros.precioMin));
+    }
+    if (filtros.precioMax !== "" && filtros.precioMax != null) {
+        parametros.set("precioMax", String(filtros.precioMax));
+    }
+    if (filtros.disponible === true) parametros.set("disponible", "true");
+    if (filtros.orden && filtros.orden !== "codigo") {
+        parametros.set("orden", filtros.orden);
+    }
+
+    const ruta = `/api/productos${parametros.size ? `?${parametros}` : ""}`;
+    const productos = await solicitarProducto(ruta, { signal: opciones.signal });
 
     if (!Array.isArray(productos)) {
         throw new Error(
@@ -108,6 +124,14 @@ async function listarProductosApi(opciones = {}) {
     }
 
     return productos;
+}
+
+async function listarCategoriasApi(opciones = {}) {
+    const categorias = await solicitarProducto("/api/productos/categorias", opciones);
+    if (!Array.isArray(categorias)) {
+        throw new Error("La API no devolvió categorías válidas.");
+    }
+    return categorias;
 }
 
 async function obtenerProductoApi(codigo, opciones = {}) {
@@ -159,6 +183,7 @@ async function actualizarStockApi(codigo, stock) {
 
 export {
     listarProductosApi,
+    listarCategoriasApi,
     obtenerProductoApi,
     crearProductoApi,
     actualizarProductoApi,

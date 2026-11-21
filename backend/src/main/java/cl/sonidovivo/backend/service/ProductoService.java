@@ -1,11 +1,13 @@
-
 package cl.sonidovivo.backend.service;
 
 import cl.sonidovivo.backend.dto.ProductoRequest;
 import cl.sonidovivo.backend.model.Producto;
 import cl.sonidovivo.backend.repository.ProductoRepository;
-import java.util.List;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,70 @@ public class ProductoService {
     @Transactional(readOnly = true)
     public List<Producto> listar() {
         return repository.findAll(Sort.by("codigo"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Producto> buscar(
+            String texto, String categoria, Integer precioMin,
+            Integer precioMax, Boolean disponible, String orden) {
+
+        if (precioMin != null && precioMin < 0 ||
+            precioMax != null && precioMax < 0 ||
+            precioMin != null && precioMax != null && precioMin > precioMax) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "El rango de precios no es valido.");
+        }
+
+        String busqueda = texto == null ? "" : texto.trim().toLowerCase(Locale.ROOT);
+        String categoriaFiltrada = categoria == null ? "" : categoria.trim().toLowerCase(Locale.ROOT);
+        if (busqueda.length() > 120 || categoriaFiltrada.length() > 100) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Texto o categoria demasiado largos.");
+        }
+
+        String ordenElegido = orden == null ? "codigo" : orden.trim();
+        Sort ordenamiento = switch (ordenElegido) {
+            case "codigo" -> Sort.by("codigo").ascending();
+            case "nombre_asc" -> Sort.by("nombre").ascending().and(Sort.by("codigo"));
+            case "nombre_desc" -> Sort.by("nombre").descending().and(Sort.by("codigo"));
+            case "precio_asc" -> Sort.by("precio").ascending().and(Sort.by("codigo"));
+            case "precio_desc" -> Sort.by("precio").descending().and(Sort.by("codigo"));
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                "Ordenamiento no valido.");
+        };
+
+        Specification<Producto> filtros = (root, query, cb) -> {
+            List<Predicate> condiciones = new ArrayList<>();
+
+            if (!busqueda.isEmpty()) {
+                String patron = "%" + busqueda + "%";
+                condiciones.add(cb.or(
+                    cb.like(cb.lower(root.get("nombre")), patron),
+                    cb.like(cb.lower(root.get("marca")), patron),
+                    cb.like(cb.lower(root.get("modelo")), patron)
+                ));
+            }
+            if (!categoriaFiltrada.isEmpty() && !categoriaFiltrada.equals("todas")) {
+                condiciones.add(cb.equal(cb.lower(root.get("categoria")), categoriaFiltrada));
+            }
+            if (precioMin != null) {
+                condiciones.add(cb.ge(root.<Integer>get("precio"), precioMin));
+            }
+            if (precioMax != null) {
+                condiciones.add(cb.le(root.<Integer>get("precio"), precioMax));
+            }
+            if (Boolean.TRUE.equals(disponible)) {
+                condiciones.add(cb.gt(root.<Integer>get("stock"), 0));
+            }
+            return cb.and(condiciones.toArray(new Predicate[0]));
+        };
+
+        return repository.findAll(filtros, ordenamiento);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> listarCategorias() {
+        return repository.listarCategorias();
     }
 
     @Transactional(readOnly = true)
