@@ -2,6 +2,7 @@ package cl.sonidovivo.backend.service;
 
 import cl.sonidovivo.backend.dto.ProductoRequest;
 import cl.sonidovivo.backend.model.Producto;
+import cl.sonidovivo.backend.model.TipoMovimientoStock;
 import cl.sonidovivo.backend.repository.ProductoRepository;
 import java.util.Locale;
 import java.util.ArrayList;
@@ -19,9 +20,17 @@ import org.springframework.web.server.ResponseStatusException;
 public class ProductoService {
 
     private final ProductoRepository repository;
+    private final InventarioService inventario;
 
-    public ProductoService(ProductoRepository repository) {
+    public ProductoService(ProductoRepository repository, InventarioService inventario) {
         this.repository = repository;
+        this.inventario = inventario;
+    }
+
+    private Producto bloquear(String codigo) {
+        return repository.bloquearParaCompra(codigo.trim())
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Producto no encontrado"));
     }
 
     @Transactional(readOnly = true)
@@ -104,6 +113,11 @@ public class ProductoService {
 
     @Transactional
     public Producto crear(ProductoRequest datos) {
+        return crear(datos, null);
+    }
+
+    @Transactional
+    public Producto crear(ProductoRequest datos, Long actorId) {
         String codigo = datos.codigo()
             .trim()
             .toUpperCase(Locale.ROOT);
@@ -131,7 +145,10 @@ public class ProductoService {
         );
 
         try {
-            return repository.saveAndFlush(nuevo);
+            Producto guardado = repository.saveAndFlush(nuevo);
+            inventario.registrar(TipoMovimientoStock.ALTA, guardado,
+                0, guardado.getStock(), actorId, null, "Producto creado");
+            return guardado;
         } catch (DataIntegrityViolationException error) {
             throw new ResponseStatusException(
                 HttpStatus.CONFLICT,
@@ -141,11 +158,14 @@ public class ProductoService {
     }
 
     @Transactional
-    public Producto actualizar(
-            String codigo,
-            ProductoRequest datos) {
+    public Producto actualizar(String codigo, ProductoRequest datos) {
+        return actualizar(codigo, datos, null);
+    }
 
-        Producto producto = buscarPorCodigo(codigo);
+    @Transactional
+    public Producto actualizar(String codigo, ProductoRequest datos, Long actorId) {
+        Producto producto = bloquear(codigo);
+        int stockAntes = producto.getStock();
 
         if (
             !producto.getCodigo().equalsIgnoreCase(
@@ -171,14 +191,19 @@ public class ProductoService {
             limpiarOpcional(datos.imagen())
         );
 
-        return repository.saveAndFlush(producto);
+        Producto guardado = repository.saveAndFlush(producto);
+        inventario.registrar(TipoMovimientoStock.AJUSTE, guardado,
+            stockAntes, guardado.getStock(), actorId, null, "Edicion administrativa");
+        return guardado;
     }
 
     @Transactional
-    public Producto actualizarStock(
-            String codigo,
-            Integer nuevoStock) {
+    public Producto actualizarStock(String codigo, Integer nuevoStock) {
+        return actualizarStock(codigo, nuevoStock, null);
+    }
 
+    @Transactional
+    public Producto actualizarStock(String codigo, Integer nuevoStock, Long actorId) {
         if (nuevoStock == null || nuevoStock < 0) {
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST,
@@ -186,16 +211,25 @@ public class ProductoService {
             );
         }
 
-        Producto producto = buscarPorCodigo(codigo);
-
+        Producto producto = bloquear(codigo);
+        int stockAntes = producto.getStock();
         producto.setStock(nuevoStock);
-
-        return repository.saveAndFlush(producto);
+        Producto guardado = repository.saveAndFlush(producto);
+        inventario.registrar(TipoMovimientoStock.AJUSTE, guardado,
+            stockAntes, nuevoStock, actorId, null, "Ajuste manual de stock");
+        return guardado;
     }
 
     @Transactional
     public void eliminar(String codigo) {
-        Producto producto = buscarPorCodigo(codigo);
+        eliminar(codigo, null);
+    }
+
+    @Transactional
+    public void eliminar(String codigo, Long actorId) {
+        Producto producto = bloquear(codigo);
+        inventario.registrar(TipoMovimientoStock.BAJA, producto,
+            producto.getStock(), 0, actorId, null, "Producto eliminado");
         repository.delete(producto);
     }
 
@@ -203,3 +237,4 @@ public class ProductoService {
         return texto == null ? "" : texto.trim();
     }
 }
+

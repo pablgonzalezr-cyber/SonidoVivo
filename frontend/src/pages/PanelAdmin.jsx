@@ -123,8 +123,8 @@ function PanelAdmin() {
                 <p className="text-secondary mb-0">
                     Los indicadores de usuarios y productos se
                     obtienen desde la API de Spring Boot.
-                    Los pedidos y reportes se integrarán
-                    próximamente con MariaDB.
+                    Los pedidos y reportes ya se consultan desde MariaDB.
+                    El panel de vendedor incluye historial y alertas de inventario.
                 </p>
             </div>
 
@@ -134,6 +134,10 @@ function PanelAdmin() {
                     className="btn btn-dark"
                 >
                     Gestionar productos
+                </Link>
+
+                <Link to="/vendedor" className="btn btn-outline-dark">
+                    Inventario y movimientos
                 </Link>
 
                 <Link

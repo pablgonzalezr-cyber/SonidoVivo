@@ -27,6 +27,7 @@ class PedidoServiceTest {
     private ProductoRepository productos;
     private UsuarioRepository usuarios;
     private PedidoService service;
+    private InventarioService inventario;
     private Usuario cliente;
     private Producto guitarra;
 
@@ -35,7 +36,8 @@ class PedidoServiceTest {
         pedidos = mock(PedidoRepository.class);
         productos = mock(ProductoRepository.class);
         usuarios = mock(UsuarioRepository.class);
-        service = new PedidoService(pedidos, productos, usuarios);
+        inventario = mock(InventarioService.class);
+        service = new PedidoService(pedidos, productos, usuarios, inventario);
 
         cliente = mock(Usuario.class);
         when(cliente.isActivo()).thenReturn(true);
@@ -65,6 +67,8 @@ class PedidoServiceTest {
         assertEquals(2, respuesta.productos().getFirst().cantidad());
         assertEquals(EstadoPedido.PENDIENTE, respuesta.estado());
         verify(pedidos).saveAndFlush(any(Pedido.class));
+        verify(inventario).registrar(eq(cl.sonidovivo.backend.model.TipoMovimientoStock.VENTA),
+            eq(guitarra), eq(5), eq(3), eq(5L), isNull(), anyString());
     }
 
     @Test
@@ -76,6 +80,7 @@ class PedidoServiceTest {
         assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
         assertEquals(5, guitarra.getStock());
         verify(pedidos, never()).saveAndFlush(any());
+        verifyNoInteractions(inventario);
     }
 
     @Test
@@ -87,6 +92,7 @@ class PedidoServiceTest {
         assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
         assertEquals(5, guitarra.getStock());
         verify(pedidos, never()).saveAndFlush(any());
+        verifyNoInteractions(inventario);
     }
 
     @Test
@@ -146,5 +152,7 @@ class PedidoServiceTest {
             () -> service.cambiarEstado(9L, EstadoPedido.ENTREGADO));
         assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
         verify(pedidos, never()).saveAndFlush(any());
+        verifyNoInteractions(inventario);
     }
 }
+

@@ -17,7 +17,7 @@ class ProductoBusquedaTest {
     @Test
     void consultarConFiltrosUtilizaEspecificacionesYOrden() {
         ProductoRepository repo = mock(ProductoRepository.class);
-        ProductoService service = new ProductoService(repo);
+        ProductoService service = new ProductoService(repo, mock(InventarioService.class));
         when(repo.findAll(any(Specification.class), any(Sort.class))).thenReturn(List.of());
         var respuesta = service.buscar("Yamaha", "Guitarras", 10000, 300000, true, "precio_asc");
         assertTrue(respuesta.isEmpty());
@@ -28,7 +28,7 @@ class ProductoBusquedaTest {
     @Test
     void validaRangoInvertido() {
         ProductoRepository repo = mock(ProductoRepository.class);
-        ProductoService service = new ProductoService(repo);
+        ProductoService service = new ProductoService(repo, mock(InventarioService.class));
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
             () -> service.buscar("", "", 500000, 100000, false, "codigo"));
         assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
@@ -38,7 +38,7 @@ class ProductoBusquedaTest {
     @Test
     void validaOrdenamientoDesconocido() {
         ProductoRepository repo = mock(ProductoRepository.class);
-        ProductoService service = new ProductoService(repo);
+        ProductoService service = new ProductoService(repo, mock(InventarioService.class));
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
             () -> service.buscar("", "", null, null, false, "DROP"));
         assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
@@ -48,9 +48,10 @@ class ProductoBusquedaTest {
     void listaCategoriasDesdeLaBD() {
         ProductoRepository repo = mock(ProductoRepository.class);
         when(repo.listarCategorias()).thenReturn(List.of("Bajos", "Guitarras"));
-        ProductoService service = new ProductoService(repo);
+        ProductoService service = new ProductoService(repo, mock(InventarioService.class));
         assertEquals(2, service.listarCategorias().size());
         verify(repo).listarCategorias();
     }
 }
+
 

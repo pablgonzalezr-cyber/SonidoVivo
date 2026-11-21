@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,11 +61,12 @@ public class ProductoController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Producto> crear(
-            @Valid @RequestBody ProductoRequest datos) {
+            @Valid @RequestBody ProductoRequest datos,
+            @AuthenticationPrincipal Jwt jwt) {
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
-            .body(service.crear(datos));
+            .body(service.crear(datos, Long.valueOf(jwt.getSubject())));
     }
 
     @Operation(
@@ -73,9 +76,10 @@ public class ProductoController {
     @PutMapping("/{codigo}")
     public Producto actualizar(
             @PathVariable String codigo,
-            @Valid @RequestBody ProductoRequest datos) {
+            @Valid @RequestBody ProductoRequest datos,
+            @AuthenticationPrincipal Jwt jwt) {
 
-        return service.actualizar(codigo, datos);
+        return service.actualizar(codigo, datos, Long.valueOf(jwt.getSubject()));
     }
 
     @Operation(
@@ -87,11 +91,13 @@ public class ProductoController {
     @PutMapping("/{codigo}/stock")
     public Producto actualizarStock(
             @PathVariable String codigo,
-            @Valid @RequestBody StockRequest datos) {
+            @Valid @RequestBody StockRequest datos,
+            @AuthenticationPrincipal Jwt jwt) {
 
         return service.actualizarStock(
             codigo,
-            datos.stock()
+            datos.stock(),
+            Long.valueOf(jwt.getSubject())
         );
     }
 
@@ -101,7 +107,8 @@ public class ProductoController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminar(@PathVariable String codigo) {
-        service.eliminar(codigo);
+    public void eliminar(@PathVariable String codigo,
+            @AuthenticationPrincipal Jwt jwt) {
+        service.eliminar(codigo, Long.valueOf(jwt.getSubject()));
     }
 }

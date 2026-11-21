@@ -6,6 +6,7 @@ import cl.sonidovivo.backend.model.DetallePedido;
 import cl.sonidovivo.backend.model.EstadoPedido;
 import cl.sonidovivo.backend.model.Pedido;
 import cl.sonidovivo.backend.model.Producto;
+import cl.sonidovivo.backend.model.TipoMovimientoStock;
 import cl.sonidovivo.backend.model.RolUsuario;
 import cl.sonidovivo.backend.model.TipoEntrega;
 import cl.sonidovivo.backend.model.Usuario;
@@ -13,6 +14,7 @@ import cl.sonidovivo.backend.repository.PedidoRepository;
 import cl.sonidovivo.backend.repository.ProductoRepository;
 import cl.sonidovivo.backend.repository.UsuarioRepository;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,15 +29,20 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final InventarioService inventario;
+
+    private record StockDescontado(Producto producto, int antes, int despues) { }
 
     public PedidoService(
             PedidoRepository pedidoRepository,
             ProductoRepository productoRepository,
-            UsuarioRepository usuarioRepository) {
+            UsuarioRepository usuarioRepository,
+            InventarioService inventario) {
 
         this.pedidoRepository = pedidoRepository;
         this.productoRepository = productoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.inventario = inventario;
     }
 
     @Transactional
@@ -102,6 +109,8 @@ public class PedidoService {
             direccion
         );
 
+        List<StockDescontado> descuentos = new ArrayList<>();
+
         for (Map.Entry<String, PedidoRequest.Item> entrada :
                 items.entrySet()) {
 
@@ -140,9 +149,10 @@ public class PedidoService {
                 );
             }
 
-            producto.setStock(
-                producto.getStock() - item.cantidad()
-            );
+            int stockAntes = producto.getStock();
+            int stockDespues = stockAntes - item.cantidad();
+            producto.setStock(stockDespues);
+            descuentos.add(new StockDescontado(producto, stockAntes, stockDespues));
 
             DetallePedido detalle = new DetallePedido(
                 producto,
@@ -153,6 +163,12 @@ public class PedidoService {
         }
 
         Pedido guardado = pedidoRepository.saveAndFlush(pedido);
+
+        for (StockDescontado descuento : descuentos) {
+            inventario.registrar(TipoMovimientoStock.VENTA, descuento.producto(),
+                descuento.antes(), descuento.despues(), usuarioId,
+                guardado.getId(), "Compra del pedido #" + guardado.getId());
+        }
 
         return PedidoResponse.desde(guardado);
     }

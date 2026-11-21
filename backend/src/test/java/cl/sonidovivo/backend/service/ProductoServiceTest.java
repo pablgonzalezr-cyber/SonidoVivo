@@ -16,11 +16,13 @@ import static org.mockito.Mockito.*;
 class ProductoServiceTest {
     private ProductoRepository repository;
     private ProductoService service;
+    private InventarioService inventario;
 
     @BeforeEach
     void preparar() {
         repository = mock(ProductoRepository.class);
-        service = new ProductoService(repository);
+        inventario = mock(InventarioService.class);
+        service = new ProductoService(repository, inventario);
     }
 
     private ProductoRequest datos(String codigo, int stock) {
@@ -58,12 +60,14 @@ class ProductoServiceTest {
     void actualizaStockSinCambiarDatosComerciales() {
         Producto producto = new Producto("GA001", "Guitarras", "Guitarra", "Yamaha",
             "F310", 5, 129990, "Descripcion");
-        when(repository.findByCodigoIgnoreCase("GA001")).thenReturn(Optional.of(producto));
+        when(repository.bloquearParaCompra("GA001")).thenReturn(Optional.of(producto));
         when(repository.saveAndFlush(producto)).thenReturn(producto);
         service.actualizarStock("GA001", 9);
         assertEquals(9, producto.getStock());
         assertEquals(129990, producto.getPrecio());
         assertEquals("Yamaha", producto.getMarca());
+        verify(inventario).registrar(eq(cl.sonidovivo.backend.model.TipoMovimientoStock.AJUSTE),
+            eq(producto), eq(5), eq(9), isNull(), isNull(), anyString());
     }
 
     @Test
@@ -78,10 +82,11 @@ class ProductoServiceTest {
     void rechazaCambioDeCodigoEnEdicion() {
         Producto producto = new Producto("GA001", "Guitarras", "Guitarra", "Yamaha",
             "F310", 5, 129990, "Descripcion");
-        when(repository.findByCodigoIgnoreCase("GA001")).thenReturn(Optional.of(producto));
+        when(repository.bloquearParaCompra("GA001")).thenReturn(Optional.of(producto));
         ResponseStatusException error = assertThrows(ResponseStatusException.class,
             () -> service.actualizar("GA001", datos("GA999", 5)));
         assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
         verify(repository, never()).saveAndFlush(any());
     }
 }
+
